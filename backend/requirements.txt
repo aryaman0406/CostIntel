@@ -1,0 +1,14 @@
+flask
+flask-cors
+flask-jwt-extended
+flask-sqlalchemy
+sqlalchemy
+pandas
+numpy
+requests
+python-dotenv
+wikipedia
+APScheduler
+werkzeug
+beautifulsoup4
+reportlab
