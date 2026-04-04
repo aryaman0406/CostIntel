@@ -1,3 +1,4 @@
+import io
 import json
 import os
 from flask import has_request_context
@@ -56,8 +57,20 @@ class DataIngestionAgent:
         total_spent = 0
         rates = {'USD': 83.5, 'EUR': 90.2, 'GBP': 105.1, 'INR': 1.0}
 
-        cloud_vendor_aliases = {'aws', 'gcp', 'azure', 'digitalocean', 'google cloud'}
-        saas_vendor_aliases = {'slack', 'zoom', 'notion', 'adobe', 'figma', 'github', 'jira'}
+        cloud_vendor_aliases = {
+            'aws', 'amazon web services', 'gcp', 'google cloud', 'azure',
+            'digitalocean', 'linode', 'oracle cloud'
+        }
+        saas_vendor_aliases = {
+            'slack', 'zoom', 'notion', 'adobe', 'figma', 'github', 'jira',
+            'atlassian', 'dropbox', 'office 365', 'microsoft 365', 'salesforce'
+        }
+
+        cloud_category_keywords = {
+            'cloud', 'compute', 'database', 'networking', 'security',
+            'serverless', 'storage', 'backup', 'monitoring', 'infrastructure'
+        }
+        saas_category_keywords = {'saas', 'software', 'subscription', 'licenses', 'licenses'}
 
         for exp in expenses:
             # Currency Conversion to Base (INR)
@@ -71,8 +84,13 @@ class DataIngestionAgent:
             cat = exp.category.lower() if exp.category else ''
             v_lower = exp.vendor.lower() if exp.vendor else ''
 
-            is_cloud = ('cloud' in cat) or (v_lower in cloud_vendor_aliases)
-            is_saas = ('saas' in cat) or ('software' in cat) or (v_lower in saas_vendor_aliases)
+            vendor_is_cloud = any(alias in v_lower for alias in cloud_vendor_aliases)
+            vendor_is_saas = any(alias in v_lower for alias in saas_vendor_aliases)
+            category_is_cloud = any(keyword in cat for keyword in cloud_category_keywords)
+            category_is_saas = any(keyword in cat for keyword in saas_category_keywords)
+
+            is_cloud = category_is_cloud or vendor_is_cloud
+            is_saas = category_is_saas or vendor_is_saas
 
             if is_cloud:
                 cloud_vendor_totals[exp.vendor] += amount_in_base
@@ -150,6 +168,83 @@ class DataIngestionAgent:
             "employee_expenses": employee_exp,
             "has_data": True
         }
+
+    def process_csv(self, file_storage, user_id):
+        """Parse a CSV file and create Expense records."""
+        import csv
+        from datetime import datetime
+        
+        try:
+            stream = io.StringIO(file_storage.stream.read().decode("UTF8"), newline=None)
+            reader = csv.DictReader(stream)
+            
+            created_count = 0
+            for row in reader:
+                # Basic column mapper
+                amount = float(row.get('Amount', 0) or row.get('amount', 0))
+                vendor = row.get('Vendor', '') or row.get('vendor', 'Unknown')
+                date_str = row.get('Date', '') or row.get('date', datetime.utcnow().strftime('%Y-%m-%d'))
+                category = row.get('Category', '') or row.get('category', 'Uncategorized')
+                
+                try:
+                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+                except:
+                    date_obj = datetime.utcnow().date()
+                
+                expense = Expense(
+                    user_id=user_id,
+                    amount=amount,
+                    vendor=vendor,
+                    date=date_obj,
+                    category=category,
+                    type='expense'
+                )
+                db.session.add(expense)
+                created_count += 1
+            
+            db.session.commit()
+            return True, f"Successfully imported {created_count} expenses."
+        except Exception as e:
+            db.session.rollback()
+            return False, f"CSV processing failed: {str(e)}"
+
+    def add_manual_expense(self, user_id, data):
+        """Add a single manual expense."""
+        from datetime import datetime
+        try:
+            date_str = data.get('date', datetime.utcnow().strftime('%Y-%m-%d'))
+            try:
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+            except:
+                date_obj = datetime.utcnow().date()
+
+            expense = Expense(
+                user_id=user_id,
+                amount=float(data.get('amount', 0)),
+                vendor=data.get('vendor', 'Manual'),
+                date=date_obj,
+                category=data.get('category', 'Manual'),
+                type='expense'
+            )
+            db.session.add(expense)
+            db.session.commit()
+            return True, "Expense added successfully."
+        except Exception as e:
+            db.session.rollback()
+            return False, str(e)
+
+    def update_budget(self, user_id, budget):
+        """Update user's monthly budget."""
+        try:
+            user = db.session.get(User, user_id)
+            if not user:
+                return False, "User not found"
+            user.monthly_budget = float(budget)
+            db.session.commit()
+            return True, "Budget updated successfully."
+        except Exception as e:
+            db.session.rollback()
+            return False, str(e)
 
     def _empty_data(self):
         """Return empty structure when user has no data but might have a budget."""

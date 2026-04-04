@@ -1,34 +1,53 @@
-# Autonomous Cost Intelligence Platform
+# CostIntel AI 
 
 An AI-powered enterprise cost management system that continuously monitors operational data, identifies cost leakage and inefficiency patterns, and initiates corrective actions with quantifiable financial impact.
 
-## Features
+## Assignment Fulfillment Checklist
 
-- **Dashboard** — Real-time analytics on your uploaded enterprise cost data
-- **Example Page** — Demo view showing how the platform works with sample data
-- **Autonomous Cost Fixer** — AI detects issues and executes corrective actions
-- **Continuous Monitoring** — Background scheduler scans for cost leakage
-- **Anomaly Detection** — Flags unusual spending patterns
-- **Shadow Cost Detector** — Finds duplicate tools and unauthorized licenses
-- **Future Cost Predictor** — Forecasts explosive cost growth
-- **What-If Simulator** — Test optimization strategies on your data
-- **AI Chatbot** — Finance assistant that fetches answers from Wikipedia & Investopedia
-- **CSV Upload & Manual Entry** — Import your enterprise expenses
+✅ **User and Role Management:** Supports Role-Based Access Control (Viewer, Analyst, Admin).
+✅ **Financial Records Management:** Complete CRUD functionality for expenses with validation.
+✅ **Dashboard Summary APIs:** Dedicated REST APIs for aggregating data (category totals, trends, recent activity).
+✅ **Access Control Logic:** JWT Middleware with granular role enforcement for all endpoints.
+✅ **Validation and Error Handling:** Robust input validation and standardized HTTP response codes.
+✅ **Data Persistence:** SQLAlchemy over SQLite (fully relational).
 
-## Tech Stack
+## API Documentation
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React (Vite), Recharts, Lucide Icons |
-| Backend | Python Flask, Flask-SQLAlchemy, Flask-JWT |
-| Database | SQLite (auto-created) |
-| AI Agents | Multi-agent architecture (7 specialized agents) |
-| Chatbot | Web scraping (Wikipedia, Investopedia, DuckDuckGo) |
-| Scheduler | APScheduler for continuous monitoring |
+### 1. Authentication & Users
+- `POST /api/auth/register` — Public signup (new users are created as Viewer by default).
+- `POST /api/auth/login` — Returns a Bearer token.
+- `GET /api/users/me` — Retrieve the authenticated user's profile and lifetime stats.
+- `GET /api/users` — Admin only: Fetch a paginated list of all users.
+- `PATCH /api/users/<id>` — Admin only: Modify roles/status.
 
-## Setup
+### 2. Financial Management
+- `GET /api/expenses/` — Fetch paginated, sortable, and filterable expenses (query by date, vendor, category).
+- `POST /api/expenses/` — Create a new financial record. Validates `amount`, `category`, and `date`.
+- `PATCH /api/expenses/<id>` — Partial updates for a given record.
+- `DELETE /api/expenses/<id>` — Admin only: soft deletes a record.
+- `POST /api/budget` — Update the monthly budget tracking limit.
 
-**No API keys required.**
+### 3. Dashboard Aggregation APIs
+- `GET /api/dashboard/summary` — Returns overarching KPIs: monthly mapped budget, total income vs expenses.
+- `GET /api/dashboard/category-totals` — Retrieves normalized cost breakdowns by SaaS, Cloud, etc.
+- `GET /api/dashboard/monthly-trend` — Formats rolling 6 to 12 month expenditure data.
+- `GET /api/dashboard/recent-activity` — Yields a slice of the 10 most recent transactions.
+- `GET /api/dashboard/top-vendors` — Groups and orders top vendor expenditures for the quarter.
+- `GET /api/dashboard/weekly-trend` — Day-by-day week trend visualization data.
+
+### 4. AI Agents & Advanced Workflows
+- `POST /api/monitoring/run` — Triggers the autonomous agent sequence to scan for leaks.
+- `GET /api/anomalies` — Flags unusual spending patterns compared to standard deviation.
+- `GET /api/shadow-costs` — Detects unauthorized or duplicated tool licenses across the organization.
+- `GET /api/report/generate` — Exports a PDF report with detailed expense rows (date/vendor/category/type/amount/notes) plus autofixer, anomaly, and shadow-cost sections.
+
+## Validation & Architecture Details
+
+1. **Validation Middleware:** All routes run input checks returning `422 Unprocessable Entity` with exact field errors for missing/invalid payloads.
+2. **Access Control:** Implemented via `@require_role("Admin", "Analyst", "Viewer")` decorators. Any invalid role automatically returns `403 Forbidden`.
+3. **Soft Deletes:** Enforced via ORM schema (`is_deleted`) ensuring safe financial record tracking and compliance.
+
+## Setup Instructions
 
 ### Backend
 ```bash
@@ -36,7 +55,9 @@ cd backend
 pip install -r requirements.txt
 python app.py
 ```
-Runs on http://localhost:5000
+*Note: The application automatically creates an SQLite DB and a default admin account on startup. Dashboard/monitoring data is user-specific and should come from user-entered/imported records.*
+
+All authenticated users can upload CSV data and view their expense history; analytics features (Auto Fixer, Anomalies, Predictor, Monitoring) run from that uploaded/user-entered dataset.
 
 ### Frontend
 ```bash
@@ -44,37 +65,15 @@ cd frontend
 npm install
 npm run dev
 ```
-Runs on http://localhost:5173
 
-## Project Structure
+### Fresh Database Reset
+```bash
+cd backend
+python reset_db.py
 ```
-Autonomous_Cost_Platform/
-├── backend/
-│   ├── agents/
-│   │   ├── anomaly_detection_agent.py
-│   │   ├── chatbot_agent.py
-│   │   ├── cost_monitoring_agent.py
-│   │   ├── data_ingestion_agent.py
-│   │   ├── future_cost_predictor_agent.py
-│   │   ├── predictive_cfo_agent.py
-│   │   ├── shadow_cost_detector_agent.py
-│   │   └── spend_analysis_agent.py
-│   ├── data/
-│   │   └── sample_data.json
-│   ├── app.py
-│   ├── models.py
-│   ├── monitoring_scheduler.py
-│   ├── requirements.txt
-│   └── .env
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── Auth.jsx
-│   │   ├── DataEntry.jsx
-│   │   ├── index.css
-│   │   └── main.jsx
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-└── README.md
-```
+This clears all existing users/expenses and recreates only the default admin account.
+
+### Credentials
+**System Admin Profile** (Pre-Seeded)
+Email: `admin@costintel.com`
+Password: `Admin@123`

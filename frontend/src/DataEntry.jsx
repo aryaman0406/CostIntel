@@ -33,13 +33,16 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
     const formData = new FormData();
     formData.append('file', file);
     try {
+      console.log('Uploading file...', file.name);
       const res = await axios.post(`${API_BASE}/upload-csv`, formData, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
+      console.log('Upload response:', res.data);
       setMessage({ type: 'success', content: res.data.message });
       await onExpenseAdded(); // Trigger data refresh
       if (setActiveTab) setActiveTab('dashboard');
     } catch (err) {
+      console.error('Upload error:', err.response || err);
       setMessage({ type: 'error', content: err.response?.data?.message || 'File upload failed.' });
     }
   };
@@ -51,14 +54,17 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
       return;
     }
     try {
+      console.log('Adding manual expense...', manual);
       const res = await axios.post(`${API_BASE}/add-expense`, manual, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      console.log('Manual expense response:', res.data);
       setMessage({ type: 'success', content: res.data.message });
       setManual({ amount: '', vendor: '', date: '', category: '' });
       await onExpenseAdded(); // Trigger data refresh
       if (setActiveTab) setActiveTab('dashboard');
     } catch (err) {
+      console.error('Manual expense error:', err.response || err);
       setMessage({ type: 'error', content: err.response?.data?.message || 'Failed to add expense.' });
     }
   };
@@ -69,14 +75,17 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
       setMessage({ type: 'error', content: 'Please enter a valid, non-negative number for your budget.' });
       return;
     }
+    console.log('Setting budget...', budget);
     try {
       const res = await axios.post(`${API_BASE}/budget`, { budget: parseFloat(budget) }, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      console.log('Budget response:', res.data);
       setMessage({ type: 'success', content: res.data.message });
       setBudget('');
       onExpenseAdded(); // Refresh profile data to show new budget
     } catch (err) {
+      console.error('Budget error:', err.response || err);
       setMessage({ type: 'error', content: err.response?.data?.message || 'Failed to set budget.' });
     }
   };

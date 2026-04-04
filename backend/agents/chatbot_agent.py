@@ -23,6 +23,8 @@ class ChatbotAgent:
         3. Web-fetched answers from Wikipedia / Investopedia
         """
         query_lower = query.lower().strip()
+        if not query_lower:
+            return "Please ask a question and I will answer it using your platform data or web sources."
 
         # ── Step 1: Conversational data entry ──
         add_match = re.search(
@@ -47,7 +49,7 @@ class ChatbotAgent:
                     "• Expense entry — 'Add 500 for Zoom'\n"
                     "• Any finance topic — I fetch answers from the web in real-time!")
 
-        # ── Step 4: Fetch from web (Wikipedia + Investopedia) ──
+        # ── Step 4: Fetch from web (for any other question) ──
         return self._fetch_from_web(query)
 
     def _handle_expense_entry(self, match):
@@ -112,14 +114,12 @@ class ChatbotAgent:
                 f"{'⚠️ You are over budget!' if usage > 100 else '✅ Within budget.'}")
 
     def _fetch_from_web(self, query):
-        """Fetch answer from Wikipedia first, then Investopedia, then Google search scraping."""
+        """Fetch answer from the web for out-of-scope questions."""
 
         # Try Wikipedia first
         wiki_answer = self._search_wikipedia(query)
         if wiki_answer:
             return wiki_answer
-
-
 
         # Try general web search scraping
         web_answer = self._search_web_general(query)
@@ -128,9 +128,9 @@ class ChatbotAgent:
 
         return (f"I couldn't find specific information about '{query}' from the web.\n\n"
                 "Try rephrasing your question, or ask about:\n"
+                "• General knowledge questions\n"
                 "• Finance terms (ROI, NPV, WACC, cash flow)\n"
                 "• Cost management (budgeting, forecasting)\n"
-                "• Cloud costs (AWS pricing, FinOps)\n"
                 "• Your platform data ('Show my budget')")
 
     def _search_wikipedia(self, query):
@@ -140,9 +140,7 @@ class ChatbotAgent:
             wikipedia.set_lang("en")
 
             # Search for relevant pages
-            results = wikipedia.search(query + " finance", results=3)
-            if not results:
-                results = wikipedia.search(query, results=3)
+            results = wikipedia.search(query, results=3)
 
             if not results:
                 return None
@@ -180,7 +178,7 @@ class ChatbotAgent:
     def _search_web_general(self, query):
         """Scrape DuckDuckGo for a quick answer on any topic."""
         try:
-            search_url = f"https://html.duckduckgo.com/html/?q={query.replace(' ', '+')}+finance"
+            search_url = f"https://html.duckduckgo.com/html/?q={query.replace(' ', '+')}"
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }

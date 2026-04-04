@@ -14,9 +14,11 @@ class ShadowCostDetectorAgent:
             if not merchant:
                 continue
 
-            # Accept real-world categories from uploads/manual entry
-            # (e.g. Cloud/SaaS/Software/Infrastructure/Hosting)
-            if not any(k in category for k in ("software", "saas", "cloud", "infrastructure", "hosting", "web hosting")):
+            # Accept common cloud/SaaS categories from uploads/manual entry.
+            if not any(k in category for k in (
+                "software", "saas", "cloud", "infrastructure", "hosting", "web hosting",
+                "compute", "database", "networking", "security", "serverless", "storage", "backup", "monitoring"
+            )):
                 continue
 
             merchant_counts[merchant] = merchant_counts.get(merchant, 0) + 1
