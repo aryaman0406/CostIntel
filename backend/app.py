@@ -37,16 +37,23 @@ def create_app(config_name="default"):
     db.init_app(app)
     jwt.init_app(app)
     bcrypt.init_app(app)
+    
+    # Build CORS origins from env var + local development
+    frontend_url = os.environ.get("FRONTEND_URL")
+    origins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ]
+    if frontend_url:
+        origins.insert(0, frontend_url)
+    
     cors.init_app(
         app,
         resources={
             r"/api/*": {
-                "origins": [
-                    "http://localhost:5173",
-                    "http://localhost:3000",
-                    "http://127.0.0.1:5173",
-                    "http://127.0.0.1:3000",
-                ],
+                "origins": origins,
                 "allow_headers": ["Content-Type", "Authorization"],
                 "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             }
