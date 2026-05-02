@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { User, Activity, FileText } from 'lucide-react';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 const ProfileCard = ({ profile, profilePic, onProfilePicChange }) => (
   <div className="card card-3d">

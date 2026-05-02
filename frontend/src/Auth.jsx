@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, UserPlus, LogIn, AlertCircle } from 'lucide-react';
 import './index.css';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 const Auth = ({ setAuthParams }) => {
   const [isLogin, setIsLogin] = useState(true);

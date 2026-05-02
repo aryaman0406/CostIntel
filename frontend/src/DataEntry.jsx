@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Upload, FileText, Send, AlertCircle, CheckCircle, DollarSign } from 'lucide-react';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
   const [file, setFile] = useState(null);

@@ -19,7 +19,7 @@ import ImpactCalculatorTab from './components/tabs/ImpactCalculatorTab';
 
 import './index.css';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000;
 
 function App() {
