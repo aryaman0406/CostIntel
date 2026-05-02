@@ -63,14 +63,32 @@ const Auth = ({ setAuthParams }) => {
           setFullName('');
         }
       } else {
-        setError(res.data.message || 'An unknown error occurred.');
+        // If backend provided field-level errors, format them for the user
+        const serverMessage = res.data.message || 'An unknown error occurred.';
+        if (res.data.errors && typeof res.data.errors === 'object') {
+          const fieldMsgs = Object.entries(res.data.errors)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join('; ');
+          setError(`${serverMessage} ${fieldMsgs}`);
+        } else {
+          setError(serverMessage);
+        }
       }
     } catch (err) {
       let msg = 'A network error occurred. Please check your connection.';
       if (err.code === 'ECONNABORTED') {
         msg = 'Request timed out. The server may be busy.';
       } else if (err.response) {
-        msg = err.response.data.message || `Server error: ${err.response.status}`;
+        const data = err.response.data || {};
+        const serverMessage = data.message || `Server error: ${err.response.status}`;
+        if (data.errors && typeof data.errors === 'object') {
+          const fieldMsgs = Object.entries(data.errors)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join('; ');
+          msg = `${serverMessage} ${fieldMsgs}`;
+        } else {
+          msg = serverMessage;
+        }
       }
       setError(msg);
     } finally {
