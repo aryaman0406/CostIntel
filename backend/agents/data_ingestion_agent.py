@@ -48,7 +48,7 @@ class DataIngestionAgent:
             return self._empty_data()
 
         cloud_vendor_totals = defaultdict(float)
-        saas_vendor_totals = defaultdict(float)
+        saas_vendor_monthly_charges = defaultdict(lambda: defaultdict(list))
         ops_exp = []
         employee_exp = []
         monthly_totals = defaultdict(float)
@@ -96,7 +96,7 @@ class DataIngestionAgent:
                 cloud_vendor_totals[exp.vendor] += amount_in_base
                 cloud_vendor_monthly[exp.vendor][month_key] += amount_in_base
             elif is_saas:
-                saas_vendor_totals[exp.vendor] += amount_in_base
+                saas_vendor_monthly_charges[exp.vendor][month_key].append(amount_in_base)
             else:
                 ops_exp.append({
                     "category": exp.category or 'General',
@@ -130,14 +130,35 @@ class DataIngestionAgent:
         cloud_costs.sort(key=lambda x: x.get('cost', 0), reverse=True)
 
         saas_subs = []
-        for vendor, total in saas_vendor_totals.items():
-            saas_subs.append({
-                "name": vendor,
-                "cost": total,
-                "users": 10,
-                "active_users": 8,
-                "renewal_date": "2026-12-31",
-            })
+        for vendor, monthly_charges in saas_vendor_monthly_charges.items():
+            max_charges = max(len(charges) for charges in monthly_charges.values()) if monthly_charges else 1
+            if max_charges > 1:
+                first_total = sum(charges[0] for charges in monthly_charges.values() if len(charges) > 0)
+                saas_subs.append({
+                    "name": vendor,
+                    "cost": first_total,
+                    "users": 10,
+                    "active_users": 8,
+                    "renewal_date": "2026-12-31",
+                })
+                for i in range(1, max_charges):
+                    dup_total = sum(charges[i] for charges in monthly_charges.values() if len(charges) > i)
+                    saas_subs.append({
+                        "name": f"{vendor} (Duplicate)",
+                        "cost": dup_total,
+                        "users": 10,
+                        "active_users": 8,
+                        "renewal_date": "2026-12-31",
+                    })
+            else:
+                total = sum(sum(charges) for charges in monthly_charges.values())
+                saas_subs.append({
+                    "name": vendor,
+                    "cost": total,
+                    "users": 10,
+                    "active_users": 8,
+                    "renewal_date": "2026-12-31",
+                })
         saas_subs.sort(key=lambda x: x.get('cost', 0), reverse=True)
 
         # Chronological historical spend
@@ -172,31 +193,52 @@ class DataIngestionAgent:
     def process_csv(self, file_storage, user_id):
         """Parse a CSV file and create Expense records."""
         import csv
+        import re
         from datetime import datetime
         
         try:
             stream = io.StringIO(file_storage.stream.read().decode("UTF8"), newline=None)
             reader = csv.DictReader(stream)
             
+            if not reader.fieldnames:
+                return False, "CSV file has no header row"
+            
+            # Create a case-insensitive, stripped mapping of headers
+            header_map = {h.strip().lower(): h for h in reader.fieldnames if h}
+            
+            # Helper to get value from row case-insensitively
+            def get_val(row, key, default=""):
+                actual_key = header_map.get(key.lower())
+                return row.get(actual_key, default) if actual_key else default
+
             created_count = 0
             for row in reader:
-                # Basic column mapper
-                amount = float(row.get('Amount', 0) or row.get('amount', 0))
-                vendor = row.get('Vendor', '') or row.get('vendor', 'Unknown')
-                date_str = row.get('Date', '') or row.get('date', datetime.utcnow().strftime('%Y-%m-%d'))
-                category = row.get('Category', '') or row.get('category', 'Uncategorized')
-                
+                amount_str = str(get_val(row, 'amount', '0')).strip()
+                # Remove common currency symbols, commas, spaces
+                cleaned_amount = re.sub(r'[₹$€£, ]', '', amount_str)
                 try:
-                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-                except:
+                    amount = float(cleaned_amount)
+                except ValueError:
+                    amount = 0.0
+
+                vendor = str(get_val(row, 'vendor', 'Unknown')).strip()
+                date_str = str(get_val(row, 'date', '')).strip()
+                category = str(get_val(row, 'category', 'Uncategorized')).strip()
+                
+                if not date_str:
                     date_obj = datetime.utcnow().date()
+                else:
+                    try:
+                        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        date_obj = datetime.utcnow().date()
                 
                 expense = Expense(
                     user_id=user_id,
                     amount=amount,
-                    vendor=vendor,
+                    vendor=vendor or 'Unknown',
                     date=date_obj,
-                    category=category,
+                    category=category or 'Uncategorized',
                     type='expense'
                 )
                 db.session.add(expense)

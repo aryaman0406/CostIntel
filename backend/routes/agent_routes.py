@@ -69,6 +69,8 @@ def run_monitoring():
 @agent_bp.route("/monitoring/status", methods=["GET"])
 @jwt_required()
 def get_monitoring_status():
+    if not monitoring_agent.monitoring_results:
+        monitoring_agent.run_monitoring_cycle()
     summary = monitoring_agent.get_executive_summary()
     return success_response(summary)
 
@@ -76,12 +78,16 @@ def get_monitoring_status():
 @jwt_required()
 def get_monitoring_recs():
     if not monitoring_agent.monitoring_results:
+        monitoring_agent.run_monitoring_cycle()
+    if not monitoring_agent.monitoring_results:
         return success_response({"recommendations": []})
     return success_response({"recommendations": monitoring_agent.monitoring_results[-1].get("recommendations", [])})
 
 @agent_bp.route("/monitoring/history", methods=["GET"])
 @jwt_required()
 def get_monitoring_history():
+    if not monitoring_agent.monitoring_results:
+        monitoring_agent.run_monitoring_cycle()
     return success_response({"cycles": monitoring_agent.monitoring_results})
 
 @agent_bp.route("/simulate", methods=["POST"])

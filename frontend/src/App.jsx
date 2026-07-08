@@ -92,6 +92,9 @@ function App() {
     try {
       const res = await axios.post(`${API_BASE}/chat`, { message: msg }, { headers: getAuthHeaders() });
       setChatHistory(p => [...p, { role: 'bot', content: res.data.data }]);
+      if (res.data.data && res.data.data.includes('✅')) {
+        fetchAllData();
+      }
     } catch (err) {
       if (err.response?.status === 401) { performLogout(); }
       setChatHistory(p => [...p, { role: 'bot', content: '❌ Unable to process. Try again.' }]);
@@ -101,7 +104,9 @@ function App() {
 
   const fetchAllData = useCallback(async () => {
     if (!token) { setLoading(false); return; }
-    setLoading(true);
+    if (!data) {
+      setLoading(true);
+    }
     const h = getAuthHeaders();
     try {
       const results = await Promise.allSettled([

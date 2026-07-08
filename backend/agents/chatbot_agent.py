@@ -59,14 +59,15 @@ class ChatbotAgent:
 
             from models import Expense, db
             from flask_jwt_extended import get_jwt_identity
-            user_id = get_jwt_identity()
+            user_id = int(get_jwt_identity())
 
             new_expense = Expense(
                 user_id=user_id,
                 amount=amount,
                 vendor=vendor,
                 date=datetime.datetime.utcnow().date(),
-                category='Conversational'
+                category='Conversational',
+                type='expense'
             )
             db.session.add(new_expense)
             db.session.commit()
@@ -115,16 +116,27 @@ class ChatbotAgent:
 
     def _fetch_from_web(self, query):
         """Fetch answer from the web for out-of-scope questions."""
+        query_lower = query.lower().strip()
 
-        # Try Wikipedia first
-        wiki_answer = self._search_wikipedia(query)
-        if wiki_answer:
-            return wiki_answer
+        # Prefer general web search (DuckDuckGo) first for advice, recommendations, dynamic lists, or stock/shares queries
+        use_web_first = any(w in query_lower for w in [
+            'give', 'recommend', 'best', 'buy', 'invest', 'stock', 'share', 'list', 'how to', 'find', 'where', 'price'
+        ])
 
-        # Try general web search scraping
-        web_answer = self._search_web_general(query)
-        if web_answer:
-            return web_answer
+        if use_web_first:
+            web_answer = self._search_web_general(query)
+            if web_answer:
+                return web_answer
+            wiki_answer = self._search_wikipedia(query)
+            if wiki_answer:
+                return wiki_answer
+        else:
+            wiki_answer = self._search_wikipedia(query)
+            if wiki_answer:
+                return wiki_answer
+            web_answer = self._search_web_general(query)
+            if web_answer:
+                return web_answer
 
         return (f"I couldn't find specific information about '{query}' from the web.\n\n"
                 "Try rephrasing your question, or ask about:\n"
@@ -138,16 +150,39 @@ class ChatbotAgent:
         try:
             import wikipedia
             wikipedia.set_lang("en")
+            # Set a custom user agent to prevent 403 Forbidden from Wikipedia API
+            wikipedia.set_user_agent("CostIntelAI/1.0 (contact@costintel.com)")
 
             # Search for relevant pages
-            results = wikipedia.search(query, results=3)
+            results = wikipedia.search(query, results=5)
 
             if not results:
                 return None
 
+            # Find the best match using acronym or finance keyword relevance
+            best_match = results[0]
+            finance_keywords = ['finance', 'investment', 'business', 'economics', 'rate', 'return', 'profit', 'cost', 'cash', 'capital', 'revenue', 'corporate']
+            
+            for r in results:
+                r_lower = r.lower()
+                r_clean = "".join(c for c in r_lower if c.isalnum() or c.isspace())
+                words = r_clean.split()
+                
+                is_acronym = False
+                if len(query) >= 2 and query.isupper():
+                    if len(words) >= len(query):
+                        acronym = "".join(w[0] for w in words if w)
+                        if acronym.startswith(query.lower()):
+                            is_acronym = True
+                            
+                has_finance_keyword = any(k in r_lower for k in finance_keywords)
+                if is_acronym or (query.lower() in r_lower and has_finance_keyword):
+                    best_match = r
+                    break
+
             # Get summary of best match
             try:
-                summary = wikipedia.summary(results[0], sentences=5)
+                summary = wikipedia.summary(best_match, sentences=5)
             except wikipedia.DisambiguationError as e:
                 # Pick the first option from disambiguation
                 try:
@@ -164,7 +199,7 @@ class ChatbotAgent:
             if len(summary) > 800:
                 summary = summary[:800] + "..."
 
-            return f"📚 From Wikipedia:\n\n{summary}\n\n— Source: Wikipedia ({results[0]})"
+            return f"📚 From Wikipedia:\n\n{summary}\n\n— Source: Wikipedia ({best_match})"
 
         except ImportError:
             logger.warning("Wikipedia module not installed")

@@ -955,17 +955,11 @@ body {
 }
 
 .features-scroll {
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
-  overflow-x: hidden;
   padding-right: 0.2rem;
-  scrollbar-gutter: stable;
 }
 
 @media (max-width: 900px) {
   .features-scroll {
-    max-height: none;
-    overflow: visible;
     padding-right: 0;
   }
 }

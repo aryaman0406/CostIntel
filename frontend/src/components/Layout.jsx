@@ -31,12 +31,27 @@ const Header = ({ activeTab, setActiveTab, theme, toggleTheme, handleLogout, fet
     { key: 'impact', icon: DollarSign, label: 'Impact Calculator' },
   ];
 
+  const navTabsRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = navTabsRef.current;
+    if (el) {
+      const onWheel = (e) => {
+        if (e.deltaY === 0) return;
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      };
+      el.addEventListener('wheel', onWheel, { passive: false });
+      return () => el.removeEventListener('wheel', onWheel);
+    }
+  }, []);
+
   return (
     <header className="header">
       <div className="header-content">
         <div className="header-left">
           <h1 className="logo">CostIntel AI</h1>
-          <nav className="nav-tabs">
+          <nav className="nav-tabs" ref={navTabsRef}>
             {navItems.map(item => (
               <NavItem key={item.key} tabKey={item.key} icon={item.icon} label={item.label} activeTab={activeTab} setActiveTab={setActiveTab} />
             ))}

@@ -14,11 +14,20 @@ class ShadowCostDetectorAgent:
             if not merchant:
                 continue
 
-            # Accept common cloud/SaaS categories from uploads/manual entry.
-            if not any(k in category for k in (
+            # Accept common cloud/SaaS categories, or check if the merchant is a known Cloud/SaaS provider
+            is_cloud_saas_cat = any(k in category for k in (
                 "software", "saas", "cloud", "infrastructure", "hosting", "web hosting",
                 "compute", "database", "networking", "security", "serverless", "storage", "backup", "monitoring"
-            )):
+            ))
+            v_lower = merchant.lower()
+            is_cloud_saas_vendor = any(alias in v_lower for alias in (
+                'aws', 'amazon web services', 'gcp', 'google cloud', 'azure',
+                'digitalocean', 'linode', 'oracle cloud', 'slack', 'zoom', 'notion',
+                'adobe', 'figma', 'github', 'jira', 'atlassian', 'dropbox',
+                'office 365', 'microsoft 365', 'salesforce'
+            ))
+
+            if not (is_cloud_saas_cat or is_cloud_saas_vendor):
                 continue
 
             merchant_counts[merchant] = merchant_counts.get(merchant, 0) + 1
