@@ -97,6 +97,11 @@ def create_app(config_name="default"):
             "Health check passed",
         )
 
+    @app.route("/", methods=["GET", "HEAD"])
+    def root_health_check():
+        """GET / — Root health check for Render."""
+        return success_response({"status": "online"}, "Service is live")
+
     # ── Error Handlers ──
     register_error_handlers(app)
 
