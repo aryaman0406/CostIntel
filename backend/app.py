@@ -64,18 +64,12 @@ def create_app(config_name="default"):
     from routes.auth_routes import auth_bp
     from routes.user_routes import user_bp
     from routes.expense_routes import expense_bp
-    from routes.dashboard_routes import dashboard_bp
+    from routes.agent_routes import agent_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api")
     app.register_blueprint(user_bp, url_prefix="/api")
     app.register_blueprint(expense_bp, url_prefix="/api/expenses")
-    app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
-
-    from routes.agent_routes import agent_bp
     app.register_blueprint(agent_bp, url_prefix="/api")
-
-    from routes.upload_routes import upload_bp
-    app.register_blueprint(upload_bp, url_prefix='/api')
 
     # ── Health Check (no auth required) ──
     @app.route("/api/health", methods=["GET"])

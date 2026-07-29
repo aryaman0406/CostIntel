@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, TrendingUp, FileText, User, Activity, Zap, AlertTriangle, Eye, PlayCircle, DollarSign, Moon, Sun, RefreshCw, LogOut, MessageCircle, X } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, FileText, User, Activity, PlayCircle, DollarSign, Moon, Sun, RefreshCw, LogOut, MessageCircle, X } from 'lucide-react';
 import { Send } from 'lucide-react';
 
 const NavItem = ({ tabKey, activeTab, setActiveTab, icon, label }) => {
@@ -23,10 +23,6 @@ const Header = ({ activeTab, setActiveTab, theme, toggleTheme, handleLogout, fet
     { key: 'data-entry', icon: FileText, label: 'Import' },
     { key: 'profile', icon: User, label: 'Profile' },
     { key: 'monitoring', icon: Activity, label: 'Monitoring' },
-    { key: 'spend', icon: Zap, label: 'Auto Fixer' },
-    { key: 'anomalies', icon: AlertTriangle, label: 'Anomalies' },
-    { key: 'shadow', icon: Eye, label: 'Shadow Costs' },
-    { key: 'predictor', icon: TrendingUp, label: 'Predictor' },
     { key: 'simulator', icon: PlayCircle, label: 'Simulator' },
     { key: 'impact', icon: DollarSign, label: 'Impact Calculator' },
   ];

@@ -10,10 +10,6 @@ import FeaturesTab from './components/tabs/FeaturesTab';
 import DashboardTab from './components/tabs/DashboardTab';
 import ProfileTab from './components/tabs/ProfileTab';
 import MonitoringTab from './components/tabs/MonitoringTab';
-import SpendAutoFixerTab from './components/tabs/SpendAutoFixerTab';
-import AnomaliesTab from './components/tabs/AnomaliesTab';
-import ShadowCostsTab from './components/tabs/ShadowCostsTab';
-import PredictorTab from './components/tabs/PredictorTab';
 import SimulatorTab from './components/tabs/SimulatorTab';
 import ImpactCalculatorTab from './components/tabs/ImpactCalculatorTab';
 
@@ -24,10 +20,6 @@ const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000;
 
 function App() {
   const [data, setData] = useState(null);
-  const [analysis, setAnalysis] = useState(null);
-  const [anomalies, setAnomalies] = useState(null);
-  const [shadowCosts, setShadowCosts] = useState(null);
-  const [predictions, setPredictions] = useState(null);
   const [simulation, setSimulation] = useState(null);
   const [profile, setProfile] = useState(null);
   const [expensesSummary, setExpensesSummary] = useState(null);
@@ -35,7 +27,6 @@ function App() {
   const [monitoringStatus, setMonitoringStatus] = useState(null);
   const [monitoringRecommendations, setMonitoringRecommendations] = useState(null);
   const [monitoringHistory, setMonitoringHistory] = useState(null);
-  const [executedActions, setExecutedActions] = useState({});
   
   const [activeTab, setActiveTab] = useState('features');
   const [loading, setLoading] = useState(true);
@@ -111,10 +102,6 @@ function App() {
     try {
       const results = await Promise.allSettled([
         axios.get(`${API_BASE}/dashboard`, { headers: h }),
-        axios.get(`${API_BASE}/analysis`, { headers: h }),
-        axios.get(`${API_BASE}/anomalies`, { headers: h }),
-        axios.get(`${API_BASE}/shadow-costs`, { headers: h }),
-        axios.get(`${API_BASE}/future-predictions`, { headers: h }),
         axios.get(`${API_BASE}/profile`, { headers: h }),
         axios.get(`${API_BASE}/expenses`, { headers: h }),
         axios.get(`${API_BASE}/monitoring/status`, { headers: h }),
@@ -134,17 +121,13 @@ function App() {
         }
       }
 
-      setAnalysis(getData(1));
-      setAnomalies(getData(2));
-      setShadowCosts(getData(3));
-      setPredictions(getData(4));
-      setProfile(getData(5));
-      setExpensesSummary(getData(6));
-      setMonitoringStatus(getData(7));
-      setMonitoringRecommendations(getData(8));
-      setMonitoringHistory(getData(9));
+      setProfile(getData(1));
+      setExpensesSummary(getData(2));
+      setMonitoringStatus(getData(3));
+      setMonitoringRecommendations(getData(4));
+      setMonitoringHistory(getData(5));
 
-      const profileData = getData(5);
+      const profileData = getData(1);
       if (profileData?.role === 'Admin') {
         try {
           const usersRes = await axios.get(`${API_BASE}/users`, { headers: h });
@@ -162,7 +145,7 @@ function App() {
       }
     }
     setLoading(false);
-  }, [token, performLogout, getAuthHeaders]);
+  }, [token, performLogout, getAuthHeaders, data]);
 
   useEffect(() => {
     if (token) {
@@ -250,15 +233,6 @@ function App() {
     setMonRunning(false);
   };
 
-  const execAction = async (id, type, svc, sav) => {
-    try { 
-      const r = await axios.post(`${API_BASE}/actions/execute`, { action_id: id, action_type: type, service: svc, savings: sav }, { headers: getAuthHeaders() }); 
-      setExecutedActions(p => ({ ...p, [id]: r.data.data })); 
-    } catch { 
-      alert('Failed to execute action.'); 
-    }
-  };
-
   if (!token) {
     return (
       <Routes>
@@ -284,10 +258,6 @@ function App() {
       case 'data-entry': return <DataEntry token={token} onExpenseAdded={fetchAllData} setActiveTab={setActiveTab} />;
       case 'profile': return <ProfileTab profile={profile} expensesSummary={expensesSummary} profilePic={profilePic} handleProfilePicChange={handleProfilePicChange} setActiveTab={setActiveTab} adminUsers={adminUsers} token={token} />;
       case 'monitoring': return <MonitoringTab hasData={hasData} triggerMon={triggerMon} monRunning={monRunning} monError={monError} monitoringStatus={monitoringStatus} monitoringHistory={monitoringHistory} setActiveTab={setActiveTab} />;
-      case 'spend': return <SpendAutoFixerTab hasData={hasData} analysis={analysis} recommendations={monitoringRecommendations} executedActions={executedActions} execAction={execAction} setActiveTab={setActiveTab} />;
-      case 'anomalies': return <AnomaliesTab hasData={hasData} anomalies={anomalies} setActiveTab={setActiveTab} />;
-      case 'shadow': return <ShadowCostsTab hasData={hasData} shadowCosts={shadowCosts} setActiveTab={setActiveTab} />;
-      case 'predictor': return <PredictorTab hasData={hasData} predictions={predictions} setActiveTab={setActiveTab} />;
       case 'simulator': return <SimulatorTab hasData={hasData} runSim={runSim} simLoading={simLoading} simulation={simulation} setActiveTab={setActiveTab} />;
       case 'impact': return <ImpactCalculatorTab />;
       case 'features':

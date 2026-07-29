@@ -14,10 +14,6 @@ from reportlab.pdfgen import canvas
 
 from utils.response import success_response, error_response
 from agents.data_ingestion_agent import DataIngestionAgent
-from agents.spend_analysis_agent import SpendAnalysisAgent
-from agents.anomaly_detection_agent import AnomalyDetectionAgent
-from agents.shadow_cost_detector_agent import ShadowCostDetectorAgent
-from agents.future_cost_predictor_agent import FutureCostPredictorAgent
 from agents.predictive_cfo_agent import PredictiveCFOAgent
 from agents.cost_monitoring_agent import CostMonitoringAgent
 from agents.chatbot_agent import ChatbotAgent
@@ -34,30 +30,6 @@ chatbot = ChatbotAgent(data_manager)
 def get_dashboard():
     data = data_manager.get_structured_data()
     return success_response(data)
-
-@agent_bp.route("/analysis", methods=["GET"])
-@jwt_required()
-def get_analysis():
-    agent = SpendAnalysisAgent(data_manager)
-    return success_response(agent.analyze())
-
-@agent_bp.route("/anomalies", methods=["GET"])
-@jwt_required()
-def get_anomalies():
-    agent = AnomalyDetectionAgent(data_manager)
-    return success_response(agent.detect_anomalies())
-
-@agent_bp.route("/shadow-costs", methods=["GET"])
-@jwt_required()
-def get_shadow_costs():
-    agent = ShadowCostDetectorAgent(data_manager)
-    return success_response(agent.detect_shadow_it())
-
-@agent_bp.route("/future-predictions", methods=["GET"])
-@jwt_required()
-def get_future_predictions():
-    agent = FutureCostPredictorAgent(data_manager)
-    return success_response(agent.predict_explosion())
 
 @agent_bp.route("/monitoring/run", methods=["POST"])
 @jwt_required()
@@ -107,13 +79,6 @@ def chat():
     response = chatbot.get_response(message)
     return success_response(response)
 
-@agent_bp.route("/actions/execute", methods=["POST"])
-@jwt_required()
-@require_role("Viewer", "Analyst", "Admin")
-def execute_action():
-    data = request.get_json(silent=True) or {}
-    return success_response(data)
-
 @agent_bp.route("/profile", methods=["GET"])
 @jwt_required()
 def profile():
@@ -142,10 +107,6 @@ def generate_report():
             Expense.user_id == user_id,
             Expense.is_deleted == False,
         ).order_by(Expense.date.desc()).all()
-
-    analysis = SpendAnalysisAgent(data_manager).analyze()
-    anomalies = AnomalyDetectionAgent(data_manager).detect_anomalies()
-    shadow_costs = ShadowCostDetectorAgent(data_manager).detect_shadow_it()
 
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
@@ -184,43 +145,6 @@ def generate_report():
         )
         if exp.notes:
             write_line(f"  Notes: {exp.notes}", 9, 0.5)
-
-    write_line("", 10, 0.4)
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(1.5 * cm, y, "Auto-Fixer / Spend Analysis")
-    y -= 0.7 * cm
-    write_line(f"Flagged value: INR {float(analysis.get('total_flagged_value', 0)):,.2f}")
-    for item in analysis.get("inefficiencies", [])[:10]:
-        write_line(f"- {item}")
-    for item in analysis.get("duplicates", [])[:10]:
-        write_line(f"- {item}")
-    for item in analysis.get("unused_subscriptions", [])[:10]:
-        write_line(f"- {item}")
-
-    write_line("", 10, 0.4)
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(1.5 * cm, y, "Anomalies")
-    y -= 0.7 * cm
-    if anomalies:
-        for alert in anomalies[:12]:
-            write_line(f"- [{alert.get('severity', 'Info')}] {alert.get('message', '')}")
-            if alert.get("root_cause"):
-                write_line(f"  Cause: {alert.get('root_cause')}", 9, 0.5)
-    else:
-        write_line("- No anomalies detected.")
-
-    write_line("", 10, 0.4)
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(1.5 * cm, y, "Shadow Costs")
-    y -= 0.7 * cm
-    if shadow_costs:
-        for sc in shadow_costs[:12]:
-            write_line(
-                f"- {sc.get('insight', 'Potential shadow cost')} | "
-                f"INR {float(sc.get('total_monthly_spend', 0) or 0):,.2f}"
-            )
-    else:
-        write_line("- No shadow costs detected.")
 
     pdf.save()
     buffer.seek(0)

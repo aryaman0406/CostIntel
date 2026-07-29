@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Activity, Zap, AlertTriangle, Eye, Users, Headset, ShieldCheck, BriefcaseBusiness } from 'lucide-react';
+import { TrendingUp, Activity, Users, Headset, ShieldCheck, BriefcaseBusiness } from 'lucide-react';
 
 const FeatureCard = ({ imgSrc, title, description, icon }) => {
   const IconComponent = icon;
@@ -49,30 +49,6 @@ const FeaturesTab = ({ setActiveTab }) => {
       description: "Get a real-time, comprehensive overview of your total cloud and SaaS expenditure with advanced data visualizations.",
       icon: Activity,
     },
-    {
-      imgSrc: "/auto_fixer_preview_1774761893718.png",
-      title: "Autonomous Cost Fixer",
-      description: "Execute one-click corrective actions to immediately resolve discovered cost inefficiencies.",
-      icon: Zap,
-    },
-    {
-      imgSrc: "/anomalies_preview_1774761909884.png",
-      title: "Anomaly Detection",
-      description: "Ensure you never face unexpected billing surprises with predictive anomaly alerts.",
-      icon: AlertTriangle,
-    },
-    {
-      imgSrc: "/shadow_costs_preview_1774761926737.png",
-      title: "Shadow IT Detection",
-      description: "Identify overlapping software licenses, duplicate vendor tools, and unapproved expenses.",
-      icon: Eye,
-    },
-    {
-      imgSrc: "/predictor_preview_1774761943359.png",
-      title: "Future Predictor",
-      description: "AI models project your resource usage and alert you prior to catastrophic cost explosions.",
-      icon: TrendingUp,
-    },
   ];
 
   const services = [
@@ -84,7 +60,7 @@ const FeaturesTab = ({ setActiveTab }) => {
     {
       title: 'Autonomous Optimization',
       description: 'Detect and remediate inefficiencies continuously with AI-driven workflows.',
-      icon: Zap,
+      icon: Activity,
     },
     {
       title: 'Forecasting & Scenario Planning',
