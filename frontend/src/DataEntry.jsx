@@ -71,17 +71,21 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
 
   const handleBudgetSubmit = async (e) => {
     e.preventDefault();
-    if (!budget || isNaN(parseFloat(budget)) || parseFloat(budget) < 0) {
+    const numericBudget = parseFloat(budget);
+    if (!budget || isNaN(numericBudget) || numericBudget < 0) {
       setMessage({ type: 'error', content: 'Please enter a valid, non-negative number for your budget.' });
       return;
     }
     console.log('Setting budget...', budget);
     try {
-      const res = await axios.post(`${API_BASE}/budget`, { budget: parseFloat(budget) }, {
+      const res = await axios.post(`${API_BASE}/budget`, { budget: numericBudget }, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       console.log('Budget response:', res.data);
-      setMessage({ type: 'success', content: res.data.message });
+      const displayMsg = (typeof res.data.message === 'string' && res.data.message.length > 5)
+        ? res.data.message
+        : `Monthly budget of ₹${numericBudget.toLocaleString()} updated successfully!`;
+      setMessage({ type: 'success', content: displayMsg });
       setBudget('');
       onExpenseAdded(); // Refresh profile data to show new budget
     } catch (err) {

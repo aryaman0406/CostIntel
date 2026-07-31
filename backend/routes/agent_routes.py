@@ -189,7 +189,14 @@ def set_budget():
     data = request.get_json(silent=True) or {}
     budget = data.get('budget', 0)
     user_id = int(get_jwt_identity())
-    success, msg = data_manager.update_budget(user_id, budget)
+    try:
+        budget_val = float(budget)
+    except (ValueError, TypeError):
+        return error_response("Invalid budget format", 400)
+    success, msg = data_manager.update_budget(user_id, budget_val)
     if not success:
         return error_response(msg, 400)
-    return success_response(message=msg)
+    from services.user_service import update_user_budget
+    update_user_budget(user_id, budget_val)
+    return success_response({"monthly_budget": budget_val}, f"Monthly budget of ₹{budget_val:,.2f} updated successfully")
+

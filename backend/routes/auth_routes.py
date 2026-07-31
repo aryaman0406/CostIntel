@@ -108,4 +108,5 @@ def update_budget():
     from services.user_service import update_user_budget
     update_user_budget(user_id, budget)
     
-    return success_response('Budget updated successfully', 200)
+    return success_response({"monthly_budget": budget}, f"Monthly budget of ₹{budget:,.2f} updated successfully")
+

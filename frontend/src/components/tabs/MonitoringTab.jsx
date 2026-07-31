@@ -47,7 +47,7 @@ const MonitoringTab = ({ hasData, triggerMon, monRunning, monError, monitoringSt
           <h2 className="section-heading">Continuous Cost Monitoring</h2>
           <span className="pulse-dot active"></span>
         </div>
-        <button className="btn btn-primary" onClick={triggerMon} disabled={monRunning}>
+        <button type="button" className="btn btn-primary" onClick={(e) => { e.preventDefault(); triggerMon(); }} disabled={monRunning}>
           <RefreshCw size={14} className={monRunning ? 'animate-spin' : ''} />
           {monRunning ? 'Scanning...' : 'Run Monitoring Now'}
         </button>

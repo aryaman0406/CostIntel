@@ -21,34 +21,28 @@ const Auth = ({ setAuthParams }) => {
     setLoading(true);
     setError('');
 
+    const payload = isLogin ? { email, password } : { email, password, full_name: fullName };
+    const endpoint = isLogin ? `${API_BASE}/login` : `${API_BASE}/register`;
+
+    const makeRequest = () => axios.post(endpoint, payload, {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 15000
+    });
+
     try {
-      const payload = isLogin ? { email, password } : { email, password, full_name: fullName };
-
-      const endpoints = isLogin
-        ? [`${API_BASE}/auth/login`, `${API_BASE}/login`]
-        : [`${API_BASE}/auth/register`, `${API_BASE}/register`];
-
-      let res = null;
-      let lastErr = null;
-      for (const endpoint of endpoints) {
-        try {
-          res = await axios.post(endpoint, payload, {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: 15000
-          });
-          break;
-        } catch (endpointErr) {
-          lastErr = endpointErr;
-          if (endpointErr?.response?.status !== 404) {
-            throw endpointErr;
-          }
+      let res;
+      try {
+        res = await makeRequest();
+      } catch (firstErr) {
+        // If initial connection timed out or hit network glitch, retry once silently
+        if (firstErr.code === 'ECONNABORTED' || !firstErr.response) {
+          await new Promise(r => setTimeout(r, 500));
+          res = await makeRequest();
+        } else {
+          throw firstErr;
         }
       }
 
-      if (!res) {
-        throw lastErr || new Error('Authentication service unavailable');
-      }
-      
       if (res.data.status === 'success') {
         if (isLogin) {
           localStorage.setItem('access_token', res.data.data.access_token);
@@ -57,13 +51,11 @@ const Auth = ({ setAuthParams }) => {
         } else {
           setIsLogin(true);
           setError('Registration successful! Please sign in.');
-          // Clear fields after registration
           setEmail('');
           setPassword('');
           setFullName('');
         }
       } else {
-        // If backend provided field-level errors, format them for the user
         const serverMessage = res.data.message || 'An unknown error occurred.';
         if (res.data.errors && typeof res.data.errors === 'object') {
           const fieldMsgs = Object.entries(res.data.errors)
@@ -77,7 +69,7 @@ const Auth = ({ setAuthParams }) => {
     } catch (err) {
       let msg = 'A network error occurred. Please check your connection.';
       if (err.code === 'ECONNABORTED') {
-        msg = 'Request timed out. The server may be busy.';
+        msg = 'Connection timed out. Please try again.';
       } else if (err.response) {
         const data = err.response.data || {};
         const serverMessage = data.message || `Server error: ${err.response.status}`;

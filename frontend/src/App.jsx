@@ -145,17 +145,13 @@ function App() {
       }
     }
     setLoading(false);
-  }, [token, performLogout, getAuthHeaders, data]);
+  }, [token, performLogout, getAuthHeaders]);
 
   useEffect(() => {
     if (token) {
-      navigate('/features');
-      const timer = setTimeout(() => {
-        fetchAllData();
-      }, 0);
-      return () => clearTimeout(timer);
+      fetchAllData();
     }
-  }, [token, navigate, fetchAllData]);
+  }, [token, fetchAllData]);
 
   useEffect(() => {
     if (!token) {
