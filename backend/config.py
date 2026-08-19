@@ -1,5 +1,5 @@
 """
-CostIntel AI — Configuration Module
+CostIntel — Configuration Module
 All application configuration centralized in one place.
 """
 

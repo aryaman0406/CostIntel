@@ -1,5 +1,5 @@
 """
-CostIntel AI — Standard JSON Response Helpers
+CostIntel — Standard JSON Response Helpers
 Ensures every API response follows a consistent format:
   { "status": "success"|"error", "message": ..., "data": ... }
 """

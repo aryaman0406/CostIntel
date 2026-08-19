@@ -91,7 +91,7 @@ const Auth = ({ setAuthParams }) => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1 className="auth-logo">CostIntel AI</h1>
+        <h1 className="auth-logo">CostIntel</h1>
         <p className="auth-subtitle">
           {isLogin ? 'Welcome back! Sign in to your dashboard.' : 'Create an account to get started.'}
         </p>

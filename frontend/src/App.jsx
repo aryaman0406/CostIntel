@@ -43,7 +43,7 @@ function App() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState([
-    { role: 'bot', content: "Hello! I'm your AI CFO Assistant. Ask me about costs, budgets, or say 'Add 500 for Zoom' to log expenses." }
+    { role: 'bot', content: "Hello! I'm your CFO Assistant. Ask me about costs, budgets, or say 'Add 500 for Zoom' to log expenses." }
   ]);
   const [chatLoading, setChatLoading] = useState(false);
   const chatEnd = useRef(null);
@@ -242,7 +242,7 @@ function App() {
     return (
       <div className="loading-screen">
         <RefreshCw size={40} className="animate-spin" />
-        <p>Loading CostIntel AI...</p>
+        <p>Loading CostIntel...</p>
       </div>
     );
   }

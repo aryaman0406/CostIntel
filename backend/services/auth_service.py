@@ -1,5 +1,5 @@
 """
-CostIntel AI — Authentication Service
+CostIntel — Authentication Service
 Handles user registration, login, and token generation.
 """
 

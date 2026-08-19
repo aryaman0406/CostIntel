@@ -1,5 +1,5 @@
 """
-CostIntel AI — Expense Management Service
+CostIntel — Expense Management Service
 CRUD operations, filtering, search, soft-delete, and restore for expenses.
 """
 

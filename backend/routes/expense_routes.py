@@ -1,5 +1,5 @@
 """
-CostIntel AI — Expense Routes
+CostIntel — Expense Routes
 Full CRUD with RBAC, validation, filtering, search, soft-delete, and restore.
 """
 

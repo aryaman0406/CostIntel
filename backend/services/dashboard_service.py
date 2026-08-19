@@ -1,5 +1,5 @@
 """
-CostIntel AI — Dashboard Service
+CostIntel — Dashboard Service
 Aggregation and summary logic for dashboard endpoints.
 All functions return plain Python dicts/lists — no Flask objects.
 """

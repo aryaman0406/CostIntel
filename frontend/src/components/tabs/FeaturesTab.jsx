@@ -59,7 +59,7 @@ const FeaturesTab = ({ setActiveTab }) => {
     },
     {
       title: 'Autonomous Optimization',
-      description: 'Detect and remediate inefficiencies continuously with AI-driven workflows.',
+      description: 'Detect and remediate inefficiencies continuously with automated workflows.',
       icon: Activity,
     },
     {
@@ -74,7 +74,7 @@ const FeaturesTab = ({ setActiveTab }) => {
       <div className="hero-card">
         <h1 className="hero-title">Grow Your Business with Modern Cost Governance</h1>
         <p className="hero-subtitle">
-          CostIntel AI is your autonomous finance operations partner, built to reduce waste,
+          CostIntel is your autonomous finance operations partner, built to reduce waste,
           increase predictability, and maximize ROI across every business unit.
         </p>
         <div className="hero-actions">
@@ -104,7 +104,7 @@ const FeaturesTab = ({ setActiveTab }) => {
             <ProofPoint title="Expert Team" description="Built by engineering and finance experts for enterprise scale." icon={Users} />
             <ProofPoint title="Proven Results" description="Consistent measurable savings across cloud and SaaS portfolios." icon={ShieldCheck} />
             <ProofPoint title="Custom Solutions" description="Workflows tailored to your governance model and growth stage." icon={Activity} />
-            <ProofPoint title="24/7 Support" description="Always-on visibility and AI assistance for critical decisions." icon={Headset} />
+            <ProofPoint title="24/7 Support" description="Always-on visibility and smart assistance for critical decisions." icon={Headset} />
           </div>
         </div>
       </div>

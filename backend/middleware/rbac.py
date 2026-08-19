@@ -1,5 +1,5 @@
 """
-CostIntel AI — Role-Based Access Control Decorator
+CostIntel — Role-Based Access Control Decorator
 Enforces role restrictions and inactive-account guards on protected routes.
 """
 

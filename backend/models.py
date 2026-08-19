@@ -1,5 +1,5 @@
 """
-CostIntel AI — Database Models
+CostIntel — Database Models
 User and Expense models with full schema, relationships, and indexes.
 """
 

@@ -1,6 +1,6 @@
-# CostIntel AI 
+# CostIntel
 
-An AI-powered enterprise cost management system that continuously monitors operational data, identifies cost leakage and inefficiency patterns, and initiates corrective actions with quantifiable financial impact.
+An enterprise cost governance and FinOps platform that continuously monitors operational data, identifies cost leakage and inefficiency patterns, and provides actionable recommendations with quantifiable financial impact.
 
 ## Assignment Fulfillment Checklist
 
@@ -9,7 +9,7 @@ An AI-powered enterprise cost management system that continuously monitors opera
 ✅ **Dashboard Summary APIs:** Dedicated REST APIs for aggregating data (category totals, trends, recent activity).
 ✅ **Access Control Logic:** JWT Middleware with granular role enforcement for all endpoints.
 ✅ **Validation and Error Handling:** Robust input validation and standardized HTTP response codes.
-✅ **Data Persistence:** SQLAlchemy over SQLite (fully relational).
+✅ **Data Persistence:** SQLAlchemy over SQLite / PostgreSQL (fully relational).
 
 ## API Documentation
 
@@ -35,11 +35,13 @@ An AI-powered enterprise cost management system that continuously monitors opera
 - `GET /api/dashboard/top-vendors` — Groups and orders top vendor expenditures for the quarter.
 - `GET /api/dashboard/weekly-trend` — Day-by-day week trend visualization data.
 
-### 4. AI Agents & Advanced Workflows
-- `POST /api/monitoring/run` — Triggers the autonomous agent sequence to scan for leaks.
-- `GET /api/anomalies` — Flags unusual spending patterns compared to standard deviation.
-- `GET /api/shadow-costs` — Detects unauthorized or duplicated tool licenses across the organization.
-- `GET /api/report/generate` — Exports a PDF report with detailed expense rows (date/vendor/category/type/amount/notes) plus autofixer, anomaly, and shadow-cost sections.
+### 4. Autonomous Monitoring & Decision Workflows
+- `POST /api/monitoring/run` — Triggers the autonomous monitoring cycle to scan for leaks and inefficiencies.
+- `GET /api/monitoring/status` — Retrieves the latest executive summary and potential savings.
+- `GET /api/monitoring/recommendations` — Retrieves prioritized corrective recommendations.
+- `POST /api/simulate` — Simulates optimization strategies (Conservative, Balanced, Aggressive) with risk & ROI metrics.
+- `POST /api/chat` — Interactive CFO Assistant endpoint for natural data queries, web finance lookups, and fast conversational expense entry.
+- `GET /api/report/generate` — Exports a clean PDF financial report with transaction line items.
 
 ## Validation & Architecture Details
 
@@ -55,9 +57,7 @@ cd backend
 pip install -r requirements.txt
 python app.py
 ```
-*Note: The application automatically creates an SQLite DB and a default admin account on startup. Dashboard/monitoring data is user-specific and should come from user-entered/imported records.*
-
-All authenticated users can upload CSV data and view their expense history; analytics features (Auto Fixer, Anomalies, Predictor, Monitoring) run from that uploaded/user-entered dataset.
+*Note: The application automatically creates an SQLite DB and a default admin account on startup. Dashboard and monitoring analytics reflect user-entered or imported dataset records.*
 
 ### Frontend
 ```bash

@@ -1,5 +1,5 @@
 """
-CostIntel AI — User Management Routes
+CostIntel — User Management Routes
 All admin-only endpoints plus self-service profile & password change.
 """
 

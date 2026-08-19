@@ -42,7 +42,7 @@ class ChatbotAgent:
 
         # ── Step 3: Greetings ──
         if any(w in query_lower for w in ['hello', 'hi', 'hey', 'good morning', 'good evening']):
-            return ("Hello! I'm your AI CFO Assistant.\n\n"
+            return ("Hello! I'm your CFO Assistant.\n\n"
                     "I can help you with:\n"
                     "• Your platform data — 'Show my budget', 'My cloud costs'\n"
                     "• Finance knowledge — 'What is ROI?', 'Explain cash flow'\n"
@@ -151,7 +151,7 @@ class ChatbotAgent:
             import wikipedia
             wikipedia.set_lang("en")
             # Set a custom user agent to prevent 403 Forbidden from Wikipedia API
-            wikipedia.set_user_agent("CostIntelAI/1.0 (contact@costintel.com)")
+            wikipedia.set_user_agent("CostIntel/1.0 (contact@costintel.com)")
 
             # Search for relevant pages
             results = wikipedia.search(query, results=5)

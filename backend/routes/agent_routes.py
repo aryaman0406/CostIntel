@@ -1,6 +1,6 @@
 """
-CostIntel AI — Agent Routes
-Exposes endpoints for the various AI agents.
+CostIntel — Agent Routes
+Exposes endpoints for the various cost intelligence agents.
 """
 import io
 import json
@@ -123,7 +123,7 @@ def generate_report():
         y -= leading * cm
 
     pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(1.5 * cm, y, "CostIntel AI - Expense Report")
+    pdf.drawString(1.5 * cm, y, "CostIntel - Expense Report")
     y -= 0.9 * cm
     write_line(f"Generated for: {user.full_name} ({user.email})", 10)
     write_line(f"Scope: {'All users' if user.role == 'Admin' else 'Current user only'}", 10)

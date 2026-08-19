@@ -46,7 +46,7 @@ const Header = ({ activeTab, setActiveTab, theme, toggleTheme, handleLogout, fet
     <header className="header">
       <div className="header-content">
         <div className="header-left">
-          <h1 className="logo">CostIntel AI</h1>
+          <h1 className="logo">CostIntel</h1>
           <nav className="nav-tabs" ref={navTabsRef}>
             {navItems.map(item => (
               <NavItem key={item.key} tabKey={item.key} icon={item.icon} label={item.label} activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -77,7 +77,7 @@ const Chatbot = ({ chatOpen, setChatOpen, chatHistory, chatLoading, chatInput, s
     {chatOpen && (
       <div className="chatbot-floating">
         <div className="chatbot-header">
-          <div className="chatbot-title">AI CFO Assistant</div>
+          <div className="chatbot-title">CFO Assistant</div>
           <div className="chatbot-subtitle">Your cost management expert</div>
         </div>
         <div className="chat-messages">

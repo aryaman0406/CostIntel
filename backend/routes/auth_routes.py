@@ -1,5 +1,5 @@
 """
-CostIntel AI — Authentication Routes
+CostIntel — Authentication Routes
 Endpoints: login, logout, and current-user profile.
 """
 

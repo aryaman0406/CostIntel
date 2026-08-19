@@ -1,5 +1,5 @@
 """
-CostIntel AI — User Management Service
+CostIntel — User Management Service
 CRUD operations and role management for Admin users.
 """
 

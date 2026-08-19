@@ -1,6 +1,6 @@
-# CostIntel AI — Backend API
+# CostIntel — Backend API
 
-> **Autonomous Cost Intelligence Platform**
+> **Autonomous Cost Governance & Intelligence Platform**
 > Internship Assignment Submission
 
 ---

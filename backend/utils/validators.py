@@ -1,5 +1,5 @@
 """
-CostIntel AI — Input Validation Helpers
+CostIntel — Input Validation Helpers
 Validate request payloads for expenses and user creation.
 """
 

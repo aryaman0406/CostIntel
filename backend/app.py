@@ -1,5 +1,5 @@
 """
-CostIntel AI — Flask Application Factory
+CostIntel — Flask Application Factory
 Entry point: creates the app, registers blueprints, seeds default admin.
 """
 
@@ -108,7 +108,7 @@ def create_app(config_name="default"):
         seed_default_admin()
         cleanup_legacy_seeded_expenses()
 
-    logger.info("CostIntel AI backend initialized successfully")
+    logger.info("CostIntel backend initialized successfully")
     return app
 
 
@@ -224,5 +224,5 @@ app = create_app()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    logger.info(f"Starting CostIntel AI backend on port {port}")
+    logger.info(f"Starting CostIntel backend on port {port}")
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)

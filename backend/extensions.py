@@ -1,5 +1,5 @@
 """
-CostIntel AI — Extension Instances
+CostIntel — Extension Instances
 Singleton instances for Flask extensions, initialized in app factory.
 """
 
