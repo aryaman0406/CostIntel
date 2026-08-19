@@ -46,7 +46,16 @@ const Header = ({ activeTab, setActiveTab, theme, toggleTheme, handleLogout, fet
     <header className="header">
       <div className="header-content">
         <div className="header-left">
-          <h1 className="logo">CostIntel</h1>
+          <h1
+            className="logo"
+            onClick={() => setActiveTab('features')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveTab('features'); }}
+            title="Go to Home"
+          >
+            CostIntel
+          </h1>
           <nav className="nav-tabs" ref={navTabsRef}>
             {navItems.map(item => (
               <NavItem key={item.key} tabKey={item.key} icon={item.icon} label={item.label} activeTab={activeTab} setActiveTab={setActiveTab} />
