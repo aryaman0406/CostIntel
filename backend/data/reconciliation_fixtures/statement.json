@@ -1,0 +1,457 @@
+[
+  {
+    "id": "STMT-0001",
+    "vendor": "Notion Labs Inc",
+    "amount": 9907.48,
+    "date": "2026-06-11",
+    "reference": "TXN-000001"
+  },
+  {
+    "id": "STMT-0002",
+    "vendor": "Zoom Video Communications",
+    "amount": 12290.95,
+    "date": "2026-04-28",
+    "reference": "TXN-000002"
+  },
+  {
+    "id": "STMT-0003",
+    "vendor": "Microsoft Azure",
+    "amount": 50396.62,
+    "date": "2026-04-10",
+    "reference": "TXN-000003"
+  },
+  {
+    "id": "STMT-0004",
+    "vendor": "Microsoft Azure",
+    "amount": 18974.91,
+    "date": "2026-08-09",
+    "reference": "TXN-000004"
+  },
+  {
+    "id": "STMT-0005",
+    "vendor": "Amazon Web Services",
+    "amount": 47925.21,
+    "date": "2026-09-15",
+    "reference": "TXN-000005"
+  },
+  {
+    "id": "STMT-0006",
+    "vendor": "Datadog Inc",
+    "amount": 19127.23,
+    "date": "2026-08-30",
+    "reference": "TXN-000006"
+  },
+  {
+    "id": "STMT-0007",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 73955.88,
+    "date": "2026-05-12",
+    "reference": "TXN-000007"
+  },
+  {
+    "id": "STMT-0008",
+    "vendor": "GitHub Inc",
+    "amount": 23980.13,
+    "date": "2026-05-27",
+    "reference": "TXN-000008"
+  },
+  {
+    "id": "STMT-0009",
+    "vendor": "Microsoft Azure",
+    "amount": 8337.02,
+    "date": "2026-04-26",
+    "reference": "TXN-000009"
+  },
+  {
+    "id": "STMT-0010",
+    "vendor": "Salesforce Inc",
+    "amount": 29564.26,
+    "date": "2026-06-08",
+    "reference": "TXN-000010"
+  },
+  {
+    "id": "STMT-0011",
+    "vendor": "Figma Inc",
+    "amount": 39321.4,
+    "date": "2026-05-03",
+    "reference": "TXN-000011"
+  },
+  {
+    "id": "STMT-0012",
+    "vendor": "Microsoft Azure",
+    "amount": 47147.43,
+    "date": "2026-09-09",
+    "reference": "TXN-000012"
+  },
+  {
+    "id": "STMT-0013",
+    "vendor": "Cloudflare Inc",
+    "amount": 73314.23,
+    "date": "2026-08-27",
+    "reference": "TXN-000013"
+  },
+  {
+    "id": "STMT-0014",
+    "vendor": "Figma Inc",
+    "amount": 6377.41,
+    "date": "2026-09-18",
+    "reference": "TXN-000014"
+  },
+  {
+    "id": "STMT-0015",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 24953.28,
+    "date": "2026-04-22",
+    "reference": "TXN-000015"
+  },
+  {
+    "id": "STMT-0016",
+    "vendor": "Salesforce Inc",
+    "amount": 9034.62,
+    "date": "2026-06-12",
+    "reference": "TXN-000016"
+  },
+  {
+    "id": "STMT-0017",
+    "vendor": "Notion Labs Inc",
+    "amount": 70982.33,
+    "date": "2026-05-13",
+    "reference": "TXN-000017"
+  },
+  {
+    "id": "STMT-0018",
+    "vendor": "GitHub Inc",
+    "amount": 18203.34,
+    "date": "2026-06-09",
+    "reference": "TXN-000018"
+  },
+  {
+    "id": "STMT-0019",
+    "vendor": "HubSpot Inc",
+    "amount": 54155.67,
+    "date": "2026-08-16",
+    "reference": "TXN-000019"
+  },
+  {
+    "id": "STMT-0020",
+    "vendor": "Google Cloud Platform",
+    "amount": 39560.99,
+    "date": "2026-06-10",
+    "reference": "TXN-000020"
+  },
+  {
+    "id": "STMT-0021",
+    "vendor": "Zoom Video Communications",
+    "amount": 58349.9,
+    "date": "2026-04-16",
+    "reference": "TXN-000021"
+  },
+  {
+    "id": "STMT-0022",
+    "vendor": "Salesforce Inc",
+    "amount": 3212.47,
+    "date": "2026-06-21",
+    "reference": "TXN-000022"
+  },
+  {
+    "id": "STMT-0023",
+    "vendor": "Slack Technologies",
+    "amount": 6092.94,
+    "date": "2026-08-25",
+    "reference": "TXN-000023"
+  },
+  {
+    "id": "STMT-0024",
+    "vendor": "Zoom Video Communications",
+    "amount": 55884.57,
+    "date": "2026-07-12",
+    "reference": "TXN-000024"
+  },
+  {
+    "id": "STMT-0025",
+    "vendor": "Google Cloud Platform",
+    "amount": 22882.37,
+    "date": "2026-06-04",
+    "reference": "TXN-000025"
+  },
+  {
+    "id": "STMT-0026",
+    "vendor": "Twilio Inc",
+    "amount": 22701.67,
+    "date": "2026-08-29",
+    "reference": "TXN-000026"
+  },
+  {
+    "id": "STMT-0027",
+    "vendor": "Cloudflare Inc",
+    "amount": 49808.53,
+    "date": "2026-07-03",
+    "reference": "TXN-000027"
+  },
+  {
+    "id": "STMT-0028",
+    "vendor": "Google Cloud Platform",
+    "amount": 43554.97,
+    "date": "2026-04-25",
+    "reference": "TXN-000028"
+  },
+  {
+    "id": "STMT-0029",
+    "vendor": "Salesforce Inc",
+    "amount": 9765.35,
+    "date": "2026-09-09",
+    "reference": "TXN-000029"
+  },
+  {
+    "id": "STMT-0030",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 58000.66,
+    "date": "2026-09-01",
+    "reference": "TXN-000030"
+  },
+  {
+    "id": "STMT-0031",
+    "vendor": "Datadog Inc",
+    "amount": 32746.83,
+    "date": "2026-07-30",
+    "reference": "TXN-000031"
+  },
+  {
+    "id": "STMT-0032",
+    "vendor": "Slack Technologies",
+    "amount": 82556.12,
+    "date": "2026-04-04",
+    "reference": "TXN-000032"
+  },
+  {
+    "id": "STMT-0033",
+    "vendor": "Notion Labs Inc",
+    "amount": 75264.62,
+    "date": "2026-06-09",
+    "reference": "TXN-000033"
+  },
+  {
+    "id": "STMT-0034",
+    "vendor": "Microsoft Azure",
+    "amount": 25300.76,
+    "date": "2026-05-12",
+    "reference": "TXN-000034"
+  },
+  {
+    "id": "STMT-0035",
+    "vendor": "Amazon Web Services",
+    "amount": 81097.45,
+    "date": "2026-06-08",
+    "reference": "TXN-000035"
+  },
+  {
+    "id": "STMT-0036",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 15596.08,
+    "date": "2026-04-29",
+    "reference": "TXN-000036"
+  },
+  {
+    "id": "STMT-0037",
+    "vendor": "Salesforce Inc",
+    "amount": 54491.23,
+    "date": "2026-09-04",
+    "reference": "TXN-000037"
+  },
+  {
+    "id": "STMT-0038",
+    "vendor": "Google Cloud Platform",
+    "amount": 32095.72,
+    "date": "2026-05-13",
+    "reference": "TXN-000038"
+  },
+  {
+    "id": "STMT-0039",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 78445.68,
+    "date": "2026-04-02",
+    "reference": "TXN-000039"
+  },
+  {
+    "id": "STMT-0040",
+    "vendor": "GitHub Inc",
+    "amount": 41787.18,
+    "date": "2026-04-30",
+    "reference": "TXN-000040"
+  },
+  {
+    "id": "STMT-0041",
+    "vendor": "Cloudflare Inc",
+    "amount": 83759.66,
+    "date": "2026-06-19",
+    "reference": "TXN-000041"
+  },
+  {
+    "id": "STMT-0042",
+    "vendor": "Amazon Web Services",
+    "amount": 20853.65,
+    "date": "2026-08-25",
+    "reference": "TXN-000042"
+  },
+  {
+    "id": "STMT-0043",
+    "vendor": "Microsoft Azure",
+    "amount": 62346.19,
+    "date": "2026-04-19",
+    "reference": "TXN-000043"
+  },
+  {
+    "id": "STMT-0044",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 11126.76,
+    "date": "2026-09-17",
+    "reference": "TXN-000044"
+  },
+  {
+    "id": "STMT-0045",
+    "vendor": "Twilio Inc",
+    "amount": 14453.23,
+    "date": "2026-08-15",
+    "reference": "TXN-000045"
+  },
+  {
+    "id": "STMT-0046",
+    "vendor": "Datadog Inc",
+    "amount": 81983.88,
+    "date": "2026-06-20",
+    "reference": "TXN-000046"
+  },
+  {
+    "id": "STMT-0047",
+    "vendor": "Notion Labs Inc",
+    "amount": 55418.01,
+    "date": "2026-05-02",
+    "reference": "TXN-000047"
+  },
+  {
+    "id": "STMT-0048",
+    "vendor": "Zoom Video Communications",
+    "amount": 5908.13,
+    "date": "2026-08-30",
+    "reference": "TXN-000048"
+  },
+  {
+    "id": "STMT-0049",
+    "vendor": "Amazon Web Services",
+    "amount": 6495.03,
+    "date": "2026-04-19",
+    "reference": "TXN-000049"
+  },
+  {
+    "id": "STMT-0050",
+    "vendor": "Salesforce Inc",
+    "amount": 28424.75,
+    "date": "2026-09-20",
+    "reference": "TXN-000050"
+  },
+  {
+    "id": "STMT-0051",
+    "vendor": "Zoom Video Communications",
+    "amount": 46069.44,
+    "date": "2026-06-03",
+    "reference": "TXN-000051"
+  },
+  {
+    "id": "STMT-0052",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 34898.85,
+    "date": "2026-07-01",
+    "reference": "TXN-000052"
+  },
+  {
+    "id": "STMT-0053",
+    "vendor": "Datadog Inc",
+    "amount": 39963.58,
+    "date": "2026-04-18",
+    "reference": "TXN-000053"
+  },
+  {
+    "id": "STMT-0054",
+    "vendor": "Amazon Web Services",
+    "amount": 34521.5,
+    "date": "2026-06-28",
+    "reference": "TXN-000054"
+  },
+  {
+    "id": "STMT-0055",
+    "vendor": "Zoom Video Communications",
+    "amount": 16572.65,
+    "date": "2026-07-26",
+    "reference": "TXN-000055"
+  },
+  {
+    "id": "STMT-0056",
+    "vendor": "Google Cloud Platform",
+    "amount": 24037.06,
+    "date": "2026-06-05",
+    "reference": "TXN-000056"
+  },
+  {
+    "id": "STMT-0057",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 73284.0,
+    "date": "2026-08-21",
+    "reference": "TXN-000057"
+  },
+  {
+    "id": "STMT-0058",
+    "vendor": "Notion Labs Inc",
+    "amount": 84939.37,
+    "date": "2026-04-06",
+    "reference": "TXN-000058"
+  },
+  {
+    "id": "STMT-0059",
+    "vendor": "Google Cloud Platform",
+    "amount": 34841.99,
+    "date": "2026-08-04",
+    "reference": "TXN-000059"
+  },
+  {
+    "id": "STMT-0060",
+    "vendor": "AMZN WEB SVC",
+    "amount": 36584.21,
+    "date": "2026-05-14",
+    "reference": "TXN-000060"
+  },
+  {
+    "id": "STMT-0061",
+    "vendor": "MSFT AZURE CLOUD",
+    "amount": 13233.45,
+    "date": "2026-07-10",
+    "reference": "TXN-000061"
+  },
+  {
+    "id": "STMT-0062",
+    "vendor": "Google Cloud Plt Ltd",
+    "amount": 6775.04,
+    "date": "2026-07-27",
+    "reference": "TXN-000062"
+  },
+  {
+    "id": "STMT-0063",
+    "vendor": "Stripe Inc",
+    "amount": 974.74,
+    "date": "2026-05-27",
+    "reference": "TXN-000063"
+  },
+  {
+    "id": "STMT-0064",
+    "vendor": "Amazon Web Services",
+    "amount": 9950.16,
+    "date": "2026-08-18",
+    "reference": "TXN-000064"
+  },
+  {
+    "id": "STMT-0065",
+    "vendor": "Amazon Web Services",
+    "amount": 9950.16,
+    "date": "2026-08-18",
+    "reference": "TXN-000065"
+  }
+]

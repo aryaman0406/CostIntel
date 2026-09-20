@@ -43,7 +43,7 @@ class DataIngestionAgent:
 
         user = db.session.get(User, user_id_int)
 
-        expenses = Expense.query.filter_by(user_id=user_id_int).all()
+        expenses = Expense.query.filter_by(user_id=user_id_int, is_deleted=False).all()
         if not expenses:
             return self._empty_data()
 
@@ -191,81 +191,269 @@ class DataIngestionAgent:
         }
 
     def process_csv(self, file_storage, user_id):
-        """Parse a CSV file and create Expense records."""
-        import csv
+        """Parse a CSV file (both labeled with headers and unlabeled/headerless) and create Expense records."""
+        import io
         import re
-        from datetime import datetime
+        import csv
+        import datetime
+        import pandas as pd
         
         try:
-            stream = io.StringIO(file_storage.stream.read().decode("UTF8"), newline=None)
-            reader = csv.DictReader(stream)
+            raw_bytes = file_storage.stream.read()
+            if not raw_bytes:
+                return False, "The uploaded file is empty. Please upload a CSV file with data."
+
+            # Check for binary file signatures (e.g. PDF %PDF, PNG, ZIP/Office PK, or null bytes)
+            if b'\x00' in raw_bytes[:1024] or raw_bytes.startswith(b'%PDF') or raw_bytes.startswith(b'\x89PNG') or raw_bytes.startswith(b'PK\x03\x04'):
+                return False, "Unsupported binary file format. Please upload a standard text .csv file (e.g. expenses.csv)."
+
+            # Attempt decoding with BOM handling, utf-8, or latin-1
+            text = None
+            for encoding in ['utf-8-sig', 'utf-8', 'latin-1']:
+                try:
+                    text = raw_bytes.decode(encoding)
+                    break
+                except UnicodeDecodeError:
+                    continue
+
+            if text is None:
+                return False, "Unable to read file text encoding. Please ensure the CSV is encoded in UTF-8."
+
+            cleaned_text = text.strip()
+            if not cleaned_text:
+                return False, "The uploaded file contains no data."
+
+            # Detect delimiter
+            sample = cleaned_text[:2048]
+            delimiter = ','
+            if ';' in sample and sample.count(';') > sample.count(','):
+                delimiter = ';'
+            elif '\t' in sample and sample.count('\t') > sample.count(','):
+                delimiter = '\t'
+
+            # Parse lines using csv.reader with auto-repair for unquoted comma-separated numbers (e.g. ₹12,450.50)
+            raw_rows = []
+            reader = csv.reader(io.StringIO(cleaned_text), delimiter=delimiter)
+            for row in reader:
+                if not row or not any(cell.strip() for cell in row):
+                    continue
+                cleaned_cells = [cell.strip() for cell in row]
+                raw_rows.append(cleaned_cells)
+
+            if not raw_rows:
+                return False, "CSV file has no data rows. Please ensure data is present."
+
+            # Recombine adjacent cells that were split due to unquoted commas in numbers (e.g. ['₹12', '450.50'] -> ['₹12450.50'])
+            normalized_rows = []
+            for r in raw_rows:
+                new_r = []
+                idx = 0
+                while idx < len(r):
+                    cell = r[idx]
+                    # Check if cell and next cell look like a split number (e.g., '12' and '450.50')
+                    clean_c = re.sub(r'[₹$€£, ]', '', cell)
+                    if idx + 1 < len(r):
+                        next_cell = r[idx + 1]
+                        clean_next = re.sub(r'[₹$€£, ]', '', next_cell)
+                        if clean_c.isdigit() and re.match(r'^\d+(\.\d+)?$', clean_next):
+                            new_r.append(f"{cell}{next_cell}")
+                            idx += 2
+                            continue
+                    new_r.append(cell)
+                    idx += 1
+                normalized_rows.append(new_r)
+
+            # Helpers for type inspection
+            date_patterns = [
+                r'^\d{4}[-/.]\d{1,2}[-/.]\d{1,2}',  # 2026-08-15
+                r'^\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}',  # 15/08/2026 or 08/15/2026
+            ]
+            known_header_words = {
+                'date', 'vendor', 'category', 'amount', 'cost', 'total',
+                'merchant', 'provider', 'description', 'notes', 'price',
+                'expense', 'spending', 'item', 'details', 'name', 'type'
+            }
+            known_category_words = {
+                'cloud', 'saas', 'operations', 'infrastructure', 'marketing',
+                'payroll', 'travel', 'utilities', 'subscriptions', 'software',
+                'compute', 'storage', 'database', 'general', 'uncategorized'
+            }
+
+            def clean_amount_val(val):
+                if val is None or val == '':
+                    return None
+                s = re.sub(r'[₹$€£, ]', '', str(val).strip())
+                try:
+                    return float(s)
+                except ValueError:
+                    return None
+
+            def parse_date_val(val):
+                if not val or not str(val).strip():
+                    return datetime.datetime.now(datetime.timezone.utc).date()
+                s = str(val).strip()
+                for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%m/%d/%Y', '%d-%m-%Y', '%Y/%m/%d', '%b %d, %Y', '%d %b %Y']:
+                    try:
+                        return datetime.datetime.strptime(s, fmt).date()
+                    except ValueError:
+                        pass
+                try:
+                    return pd.to_datetime(s, errors='coerce').date()
+                except Exception:
+                    return datetime.datetime.now(datetime.timezone.utc).date()
+
+            # Build DataFrame
+            max_cols = max(len(r) for r in normalized_rows)
+            padded_rows = [r + [''] * (max_cols - len(r)) for r in normalized_rows]
+            df_raw = pd.DataFrame(padded_rows)
+
+            first_row = [str(x).strip().lower() for x in df_raw.iloc[0].values if str(x).strip()]
+            has_explicit_headers = any(h in known_header_words for h in first_row)
             
-            if not reader.fieldnames:
-                return False, "CSV file has no header row"
-            
-            # Create a case-insensitive, stripped mapping of headers
-            header_map = {h.strip().lower(): h for h in reader.fieldnames if h}
-            
-            # Helper to get value from row case-insensitively
-            def get_val(row, key, default=""):
-                actual_key = header_map.get(key.lower())
-                return row.get(actual_key, default) if actual_key else default
+            first_row_amounts = [clean_amount_val(x) for x in df_raw.iloc[0].values]
+            has_numeric_in_first_row = any(a is not None and a > 0 for a in first_row_amounts)
+            has_date_in_first_row = any(any(re.match(p, str(x).strip()) for p in date_patterns) for x in df_raw.iloc[0].values if str(x).strip())
+
+            if has_explicit_headers and not (has_numeric_in_first_row and has_date_in_first_row):
+                # Labeled CSV
+                header_names = [str(col).strip().lower() for col in df_raw.iloc[0].values]
+                df_data = df_raw.iloc[1:].copy()
+                df_data.columns = header_names
+
+                col_map = {}
+                for col in df_data.columns:
+                    c = str(col).lower()
+                    if any(k in c for k in ['amount', 'cost', 'total', 'price', 'spend']):
+                        col_map['amount'] = col
+                    elif any(k in c for k in ['date', 'time', 'period']):
+                        col_map['date'] = col
+                    elif any(k in c for k in ['category', 'type', 'dept', 'department']):
+                        col_map['category'] = col
+                    elif any(k in c for k in ['vendor', 'merchant', 'provider', 'name', 'description', 'item']):
+                        col_map['vendor'] = col
+            else:
+                # Unlabeled / Headerless CSV
+                df_data = df_raw.copy()
+                col_map = {}
+                
+                date_cols = []
+                amount_cols = []
+                cat_cols = []
+                string_cols = []
+
+                for col_idx in df_data.columns:
+                    col_series = df_data[col_idx].dropna().astype(str)
+                    if col_series.empty:
+                        continue
+
+                    # Test for numeric / amount
+                    numeric_valid = [clean_amount_val(v) is not None for v in col_series[:20] if v.strip()]
+                    if numeric_valid and sum(numeric_valid) / max(len(numeric_valid), 1) > 0.6:
+                        amount_cols.append(col_idx)
+                        continue
+
+                    # Test for date
+                    date_valid = [any(re.match(p, v.strip()) for p in date_patterns) for v in col_series[:20] if v.strip()]
+                    if date_valid and sum(date_valid) / max(len(date_valid), 1) > 0.5:
+                        date_cols.append(col_idx)
+                        continue
+
+                    # Test for known category words
+                    cat_match = [v.strip().lower() in known_category_words for v in col_series[:20] if v.strip()]
+                    if cat_match and sum(cat_match) / max(len(cat_match), 1) > 0.4:
+                        cat_cols.append(col_idx)
+                        continue
+
+                    string_cols.append(col_idx)
+
+                if amount_cols:
+                    col_map['amount'] = amount_cols[0]
+                if date_cols:
+                    col_map['date'] = date_cols[0]
+                if cat_cols:
+                    col_map['category'] = cat_cols[0]
+                
+                for sc in string_cols:
+                    if sc not in col_map.values():
+                        col_map['vendor'] = sc
+                        break
+                
+                if 'vendor' not in col_map:
+                    for col_idx in df_data.columns:
+                        if col_idx != col_map.get('amount') and col_idx != col_map.get('date'):
+                            col_map['vendor'] = col_idx
+                            break
 
             created_count = 0
-            for row in reader:
-                amount_str = str(get_val(row, 'amount', '0')).strip()
-                # Remove common currency symbols, commas, spaces
-                cleaned_amount = re.sub(r'[₹$€£, ]', '', amount_str)
-                try:
-                    amount = float(cleaned_amount)
-                except ValueError:
-                    amount = 0.0
+            for _, row in df_data.iterrows():
+                # Extract Amount
+                raw_amt = row.get(col_map.get('amount')) if 'amount' in col_map else None
+                amt = clean_amount_val(raw_amt)
+                amount = float(amt) if amt is not None else 0.0
 
-                vendor = str(get_val(row, 'vendor', 'Unknown')).strip()
-                date_str = str(get_val(row, 'date', '')).strip()
-                category = str(get_val(row, 'category', 'Uncategorized')).strip()
-                
-                if not date_str:
-                    date_obj = datetime.utcnow().date()
-                else:
-                    try:
-                        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-                    except ValueError:
-                        date_obj = datetime.utcnow().date()
-                
+                # Extract Date
+                raw_date = row.get(col_map.get('date')) if 'date' in col_map else None
+                date_obj = parse_date_val(raw_date)
+
+                # Extract Vendor
+                raw_vendor = str(row.get(col_map.get('vendor'), '')).strip() if 'vendor' in col_map else ''
+                vendor = raw_vendor if raw_vendor and raw_vendor.lower() != 'nan' else 'Unknown Vendor'
+
+                # Extract Category
+                raw_cat = str(row.get(col_map.get('category'), '')).strip() if 'category' in col_map else ''
+                category = raw_cat if raw_cat and raw_cat.lower() != 'nan' else 'Uncategorized'
+
                 expense = Expense(
                     user_id=user_id,
-                    amount=amount,
-                    vendor=vendor or 'Unknown',
+                    amount=max(0.0, amount),
+                    vendor=vendor,
                     date=date_obj,
-                    category=category or 'Uncategorized',
+                    category=category,
                     type='expense'
                 )
                 db.session.add(expense)
                 created_count += 1
-            
+
+            if created_count == 0:
+                db.session.rollback()
+                return False, "No valid expense rows found in CSV."
+
             db.session.commit()
-            return True, f"Successfully imported {created_count} expenses."
+            mode_desc = "labeled" if has_explicit_headers else "unlabeled/auto-inferred"
+            return True, f"Successfully imported {created_count} expenses ({mode_desc} data)."
         except Exception as e:
             db.session.rollback()
             return False, f"CSV processing failed: {str(e)}"
 
     def add_manual_expense(self, user_id, data):
         """Add a single manual expense."""
-        from datetime import datetime
         try:
-            date_str = data.get('date', datetime.utcnow().strftime('%Y-%m-%d'))
-            try:
-                date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-            except:
-                date_obj = datetime.utcnow().date()
+            amount_val = float(data.get('amount', 0))
+            if amount_val <= 0:
+                return False, "Amount must be a positive number greater than 0."
+
+            vendor_val = str(data.get('vendor', '')).strip()
+            if not vendor_val:
+                return False, "Vendor name is required."
+
+            today_date = datetime.datetime.now(datetime.timezone.utc).date()
+            date_str = str(data.get('date', '')).strip()
+            if date_str:
+                try:
+                    date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+                except Exception:
+                    date_obj = today_date
+            else:
+                date_obj = today_date
+
+            category_val = str(data.get('category', 'Manual')).strip() or 'Manual'
 
             expense = Expense(
                 user_id=user_id,
-                amount=float(data.get('amount', 0)),
-                vendor=data.get('vendor', 'Manual'),
+                amount=amount_val,
+                vendor=vendor_val,
                 date=date_obj,
-                category=data.get('category', 'Manual'),
+                category=category_val,
                 type='expense'
             )
             db.session.add(expense)
@@ -273,17 +461,19 @@ class DataIngestionAgent:
             return True, "Expense added successfully."
         except Exception as e:
             db.session.rollback()
-            return False, str(e)
+            return False, f"Invalid expense data: {str(e)}"
 
     def update_budget(self, user_id, budget):
         """Update user's monthly budget."""
         try:
-            user = db.session.get(User, user_id)
-            if not user:
-                return False, "User not found"
-            user.monthly_budget = float(budget)
-            db.session.commit()
-            return True, "Budget updated successfully."
+            if budget < 0:
+                return False, "Monthly budget cannot be negative."
+            user = User.query.get(user_id)
+            if user:
+                user.monthly_budget = budget
+                db.session.commit()
+                return True, "Budget updated."
+            return False, "User not found."
         except Exception as e:
             db.session.rollback()
             return False, str(e)

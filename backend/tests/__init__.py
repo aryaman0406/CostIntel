@@ -1,0 +1,3 @@
+"""
+CostIntel Test Suite
+"""

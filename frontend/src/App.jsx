@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { RefreshCw } from 'lucide-react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
+import LandingPage from './landing/LandingPage';
 import Auth from './Auth';
 import DataEntry from './DataEntry';
 import Layout from './components/Layout';
-import FeaturesTab from './components/tabs/FeaturesTab';
+import OverviewTab from './components/tabs/OverviewTab';
 import DashboardTab from './components/tabs/DashboardTab';
 import ProfileTab from './components/tabs/ProfileTab';
 import MonitoringTab from './components/tabs/MonitoringTab';
 import SimulatorTab from './components/tabs/SimulatorTab';
 import ImpactCalculatorTab from './components/tabs/ImpactCalculatorTab';
+import CFOChatTab from './components/tabs/CFOChatTab';
+import AuditTrailTab from './components/tabs/AuditTrailTab';
+import AnomalyTab from './components/tabs/AnomalyTab';
+import ReconciliationTab from './components/tabs/ReconciliationTab';
 
 import './index.css';
 
@@ -25,21 +29,29 @@ function App() {
   const [expensesSummary, setExpensesSummary] = useState(null);
   const [adminUsers, setAdminUsers] = useState([]);
   const [monitoringStatus, setMonitoringStatus] = useState(null);
-  const [monitoringRecommendations, setMonitoringRecommendations] = useState(null);
   const [monitoringHistory, setMonitoringHistory] = useState(null);
-  
-  const [activeTab, setActiveTab] = useState('features');
+  const [monitoringRuns, setMonitoringRuns] = useState([]);
+
+  // New: anomaly + audit state
+  const [anomalyData, setAnomalyData] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
+
+  // Reconciliation state
+  const [reconResult, setReconResult] = useState(null);
+  const [reconLoading, setReconLoading] = useState(false);
+
+  const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('access_token') || null);
   const [simLoading, setSimLoading] = useState(false);
   const [monRunning, setMonRunning] = useState(false);
   const [monError, setMonError] = useState('');
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const [profilePic, setProfilePic] = useState(localStorage.getItem('profilePic') || null);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [profilePic, setProfilePic] = useState(null);
 
   const navigate = useNavigate();
 
-  // Chatbot state
+  // Floating chatbot state (preserved for Layout)
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState([
@@ -53,7 +65,7 @@ function App() {
   const performLogout = useCallback(() => {
     localStorage.removeItem('access_token');
     setToken(null);
-    navigate('/login');
+    navigate('/?modal=login', { replace: true });
   }, [navigate]);
 
   const getAuthHeaders = useCallback(() => {
@@ -73,6 +85,16 @@ function App() {
     }
   };
 
+  // Shared chat API call — used by floating chatbot AND CFOChatTab
+  const callChatAPI = useCallback(async (message) => {
+    const res = await axios.post(`${API_BASE}/chat`, { message }, { headers: getAuthHeaders() });
+    // New response shape: { data: { message, tools_used } }
+    // Old shape: { data: string }
+    // We handle both.
+    return res.data.data;
+  }, [getAuthHeaders]);
+
+  // Floating chat handler (backward compat)
   const handleChat = async (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
@@ -81,9 +103,11 @@ function App() {
     setChatHistory(p => [...p, { role: 'user', content: msg }]);
     setChatLoading(true);
     try {
-      const res = await axios.post(`${API_BASE}/chat`, { message: msg }, { headers: getAuthHeaders() });
-      setChatHistory(p => [...p, { role: 'bot', content: res.data.data }]);
-      if (res.data.data && res.data.data.includes('✅')) {
+      const resData = await callChatAPI(msg);
+      // resData might be { message, tools_used } or a plain string
+      const text = typeof resData === 'string' ? resData : (resData?.message || JSON.stringify(resData));
+      setChatHistory(p => [...p, { role: 'bot', content: text }]);
+      if (text && text.includes('✅')) {
         fetchAllData();
       }
     } catch (err) {
@@ -93,11 +117,38 @@ function App() {
     setChatLoading(false);
   };
 
-  const fetchAllData = useCallback(async () => {
-    if (!token) { setLoading(false); return; }
-    if (!data) {
-      setLoading(true);
+  const fetchAnomalies = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_BASE}/anomalies`, { headers: getAuthHeaders() });
+      setAnomalyData(res.data?.data?.anomalies || []);
+    } catch {
+      setAnomalyData([]);
     }
+  }, [token, getAuthHeaders]);
+
+  const fetchAuditLogs = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_BASE}/audit/logs?per_page=50`, { headers: getAuthHeaders() });
+      setAuditLogs(res.data?.data?.logs || []);
+    } catch {
+      setAuditLogs([]);
+    }
+  }, [token, getAuthHeaders]);
+
+  const fetchLastRecon = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_BASE}/reconciliation/last-run`, { headers: getAuthHeaders() });
+      if (res.data?.data) setReconResult(res.data.data);
+    } catch {
+      // 404 just means no run yet — that's fine
+    }
+  }, [token, getAuthHeaders]);
+
+  const fetchAllData = useCallback(async () => {
+    if (!token) return;
     const h = getAuthHeaders();
     try {
       const results = await Promise.allSettled([
@@ -105,8 +156,11 @@ function App() {
         axios.get(`${API_BASE}/profile`, { headers: h }),
         axios.get(`${API_BASE}/expenses`, { headers: h }),
         axios.get(`${API_BASE}/monitoring/status`, { headers: h }),
-        axios.get(`${API_BASE}/monitoring/recommendations`, { headers: h }),
         axios.get(`${API_BASE}/monitoring/history`, { headers: h }),
+        axios.get(`${API_BASE}/monitoring/runs`, { headers: h }),
+        axios.get(`${API_BASE}/anomalies`, { headers: h }),
+        axios.get(`${API_BASE}/audit/logs?per_page=50`, { headers: h }),
+        axios.get(`${API_BASE}/reconciliation/last-run`, { headers: h }),
       ]);
 
       const getData = (idx) => results[idx].status === 'fulfilled' ? results[idx].value?.data?.data : null;
@@ -124,8 +178,19 @@ function App() {
       setProfile(getData(1));
       setExpensesSummary(getData(2));
       setMonitoringStatus(getData(3));
-      setMonitoringRecommendations(getData(4));
-      setMonitoringHistory(getData(5));
+      setMonitoringHistory(getData(4));
+
+      const runsData = getData(5);
+      setMonitoringRuns(runsData?.runs || []);
+
+      const anomaliesData = getData(6);
+      if (anomaliesData?.anomalies) setAnomalyData(anomaliesData.anomalies);
+
+      const auditData = getData(7);
+      if (auditData?.logs) setAuditLogs(auditData.logs);
+
+      const reconData = getData(8);
+      if (reconData) setReconResult(reconData);
 
       const profileData = getData(1);
       if (profileData?.role === 'Admin') {
@@ -143,15 +208,33 @@ function App() {
       if (err.response?.status === 401) {
         performLogout();
       }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [token, performLogout, getAuthHeaders]);
 
   useEffect(() => {
-    if (token) {
+    let isMounted = true;
+    if (token && isMounted) {
       fetchAllData();
     }
+    return () => { isMounted = false; };
   }, [token, fetchAllData]);
+
+  // Fetch anomalies + audit when tab changes to those sections
+  useEffect(() => {
+    let isMounted = true;
+    if (!isMounted) return;
+    if (activeTab === 'anomalies') fetchAnomalies();
+    if (activeTab === 'audit') fetchAuditLogs();
+    if (activeTab === 'reconciliation') fetchLastRecon();
+    if (activeTab === 'overview') {
+      fetchAuditLogs();
+      fetchAnomalies();
+      fetchLastRecon();
+    }
+    return () => { isMounted = false; };
+  }, [activeTab, fetchAnomalies, fetchAuditLogs, fetchLastRecon]);
 
   useEffect(() => {
     if (!token) {
@@ -190,7 +273,6 @@ function App() {
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
-
   const handleLogout = () => { performLogout(); };
 
   const runSim = async (s) => {
@@ -210,15 +292,15 @@ function App() {
     const h = getAuthHeaders();
     try {
       await axios.post(`${API_BASE}/monitoring/run`, {}, { headers: h });
-      const [status, recs, hist] = await Promise.all([
-        axios.get(`${API_BASE}/monitoring/status`,{headers:h}),
-        axios.get(`${API_BASE}/monitoring/recommendations`,{headers:h}),
-        axios.get(`${API_BASE}/monitoring/history`,{headers:h})
+      const [status, hist, runs] = await Promise.all([
+        axios.get(`${API_BASE}/monitoring/status`, { headers: h }),
+        axios.get(`${API_BASE}/monitoring/history`, { headers: h }),
+        axios.get(`${API_BASE}/monitoring/runs`, { headers: h }),
       ]);
-      setMonitoringStatus(status.data.data); 
-      setMonitoringRecommendations(recs.data.data); 
+      setMonitoringStatus(status.data.data);
       setMonitoringHistory(hist.data.data);
-    } catch(e){
+      setMonitoringRuns(runs.data?.data?.runs || []);
+    } catch (e) {
       if (e.response?.status === 401) {
         setMonError('Session expired. Please sign in again.');
         performLogout();
@@ -229,19 +311,55 @@ function App() {
     setMonRunning(false);
   };
 
+  const handleRescore = async () => {
+    const h = getAuthHeaders();
+    await axios.post(`${API_BASE}/anomalies/score`, {}, { headers: h });
+    await fetchAnomalies();
+    await fetchAuditLogs();
+  };
+
+  const handleRunRecon = async () => {
+    setReconLoading(true);
+    try {
+      const res = await axios.post(`${API_BASE}/reconciliation/run`, {}, { headers: getAuthHeaders() });
+      if (res.data?.data) setReconResult(res.data.data);
+      // Also refresh audit logs so the new reconciliation_run entry appears
+      await fetchAuditLogs();
+    } catch (e) {
+      console.error('Reconciliation run failed:', e);
+    }
+    setReconLoading(false);
+  };
+
   if (!token) {
     return (
       <Routes>
-        <Route path="/login" element={<Auth setAuthParams={setToken} />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Public landing page — entry point for all unauthenticated visitors */}
+        <Route path="/" element={<LandingPage onAuthSuccess={setToken} />} />
+        {/* /login kept as an alias for backward-compat deep links */}
+        <Route path="/login" element={<Navigate to="/?modal=login" replace />} />
+        {/* Old Auth component kept in case it's linked from somewhere else */}
+        <Route path="/auth" element={<Auth setAuthParams={setToken} />} />
+        {/* Any other path → landing with login modal + redirect hint */}
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to={`/?modal=login&redirect=${encodeURIComponent(location.pathname + location.search)}`}
+              replace
+            />
+          }
+        />
       </Routes>
     );
   }
 
   if (loading) {
     return (
-      <div className="loading-screen">
-        <RefreshCw size={40} className="animate-spin" />
+      <div className="loading-screen" data-theme={theme}>
+        <div className="loading-logo">
+          <Shield size={24} />
+        </div>
         <p>Loading CostIntel...</p>
       </div>
     );
@@ -250,15 +368,40 @@ function App() {
   const renderActiveTab = () => {
     const hasData = data?.has_data === true;
     switch (activeTab) {
-      case 'dashboard': return <DashboardTab data={data} setActiveTab={setActiveTab} />;
-      case 'data-entry': return <DataEntry token={token} onExpenseAdded={fetchAllData} setActiveTab={setActiveTab} />;
-      case 'profile': return <ProfileTab profile={profile} expensesSummary={expensesSummary} profilePic={profilePic} handleProfilePicChange={handleProfilePicChange} setActiveTab={setActiveTab} adminUsers={adminUsers} token={token} />;
-      case 'monitoring': return <MonitoringTab hasData={hasData} triggerMon={triggerMon} monRunning={monRunning} monError={monError} monitoringStatus={monitoringStatus} monitoringHistory={monitoringHistory} setActiveTab={setActiveTab} />;
-      case 'simulator': return <SimulatorTab hasData={hasData} runSim={runSim} simLoading={simLoading} simulation={simulation} setActiveTab={setActiveTab} />;
-      case 'impact': return <ImpactCalculatorTab />;
-      case 'features':
+      case 'dashboard':
+        return <DashboardTab data={data} setActiveTab={setActiveTab} />;
+      case 'data-entry':
+        return <DataEntry token={token} onExpenseAdded={fetchAllData} setActiveTab={setActiveTab} />;
+      case 'profile':
+        return <ProfileTab profile={profile} expensesSummary={expensesSummary} profilePic={profilePic} handleProfilePicChange={handleProfilePicChange} setActiveTab={setActiveTab} adminUsers={adminUsers} token={token} />;
+      case 'monitoring':
+        return <MonitoringTab hasData={hasData} triggerMon={triggerMon} monRunning={monRunning} monError={monError} monitoringStatus={monitoringStatus} monitoringHistory={monitoringHistory} monitoringRuns={monitoringRuns} setActiveTab={setActiveTab} />;
+      case 'simulator':
+        return <SimulatorTab hasData={hasData} runSim={runSim} simLoading={simLoading} simulation={simulation} setActiveTab={setActiveTab} />;
+      case 'impact':
+        return <ImpactCalculatorTab />;
+      case 'cfo-chat':
+        return <CFOChatTab onChat={callChatAPI} />;
+      case 'anomalies':
+        return <AnomalyTab anomalyData={anomalyData} onRescore={handleRescore} />;
+      case 'audit':
+        return <AuditTrailTab auditLogs={auditLogs} />;
+      case 'reconciliation':
+        return <ReconciliationTab reconResult={reconResult} reconLoading={reconLoading} onRunRecon={handleRunRecon} />;
+      case 'overview':
       default:
-        return <FeaturesTab setActiveTab={setActiveTab} />;
+        return (
+          <OverviewTab
+            data={data}
+            expensesSummary={expensesSummary}
+            anomalyData={anomalyData}
+            reconResult={reconResult}
+            monitoringStatus={monitoringStatus}
+            monitoringRuns={monitoringRuns}
+            auditLogs={auditLogs}
+            setActiveTab={setActiveTab}
+          />
+        );
     }
   };
 
@@ -277,11 +420,12 @@ function App() {
     chatInput,
     setChatInput,
     handleChat,
-    chatEnd
+    chatEnd,
   };
 
   return (
     <Routes>
+      {/* When authenticated, / is the dashboard (same as before) */}
       <Route path="/*" element={<Layout {...layoutProps}>{renderActiveTab()}</Layout>} />
     </Routes>
   );

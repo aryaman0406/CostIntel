@@ -167,7 +167,9 @@ def update_user_budget(user_id, budget):
         (True, None) on success.
         (False, error_message) on failure.
     """
-    user = User.query.get(user_id)
+    if budget < 0:
+        return False, "Monthly budget cannot be negative"
+    user = db.session.get(User, user_id)
     if user:
         user.monthly_budget = budget
         db.session.commit()

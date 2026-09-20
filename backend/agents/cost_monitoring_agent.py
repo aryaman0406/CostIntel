@@ -6,7 +6,7 @@ Initiates corrective actions with quantifiable financial impact
 
 import logging
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -22,15 +22,15 @@ class CostMonitoringAgent:
         self.monitoring_results = []
         self.financial_impact_tracker = {}
     
-    def run_monitoring_cycle(self) -> Dict[str, Any]:
+    def run_monitoring_cycle(self, user_id: int = None) -> Dict[str, Any]:
         """
         Execute a complete monitoring cycle. Returns findings with financial impact.
         This is meant to run continuously (e.g., daily via scheduler).
         """
-        cycle_id = datetime.utcnow().isoformat()
+        now_iso = datetime.now(timezone.utc).isoformat()
         findings = {
-            "cycle_id": cycle_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "cycle_id": now_iso,
+            "timestamp": now_iso,
             "issues_detected": [],
             "total_potential_savings": 0,
             "recommendations": []

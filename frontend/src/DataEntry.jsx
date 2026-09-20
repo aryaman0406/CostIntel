@@ -30,42 +30,47 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
       setMessage({ type: 'error', content: 'Please select a CSV file to upload.' });
       return;
     }
+    if (!file.name.toLowerCase().endsWith('.csv') && file.type && !file.type.includes('csv') && !file.type.includes('text')) {
+      setMessage({ type: 'error', content: 'Unsupported file format. Please choose a .csv file (e.g. expenses.csv).' });
+      return;
+    }
     const formData = new FormData();
     formData.append('file', file);
     try {
-      console.log('Uploading file...', file.name);
       const res = await axios.post(`${API_BASE}/upload-csv`, formData, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
-      console.log('Upload response:', res.data);
       setMessage({ type: 'success', content: res.data.message });
       await onExpenseAdded(); // Trigger data refresh
       if (setActiveTab) setActiveTab('dashboard');
     } catch (err) {
-      console.error('Upload error:', err.response || err);
-      setMessage({ type: 'error', content: err.response?.data?.message || 'File upload failed.' });
+      const errMsg = err.response?.data?.message || err.response?.data?.error || 'File upload failed. Please verify CSV format.';
+      setMessage({ type: 'error', content: errMsg });
     }
   };
 
   const handleManualSubmit = async (e) => {
     e.preventDefault();
-    if (!manual.amount || !manual.vendor || !manual.date) {
+    const amt = parseFloat(manual.amount);
+    if (!manual.vendor || !manual.date) {
       setMessage({ type: 'error', content: 'Please fill all required fields for the expense.' });
       return;
     }
+    if (isNaN(amt) || amt <= 0) {
+      setMessage({ type: 'error', content: 'Please enter a valid positive expense amount (e.g. 500 or 1250.50).' });
+      return;
+    }
     try {
-      console.log('Adding manual expense...', manual);
       const res = await axios.post(`${API_BASE}/add-expense`, manual, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      console.log('Manual expense response:', res.data);
       setMessage({ type: 'success', content: res.data.message });
       setManual({ amount: '', vendor: '', date: '', category: '' });
       await onExpenseAdded(); // Trigger data refresh
       if (setActiveTab) setActiveTab('dashboard');
     } catch (err) {
-      console.error('Manual expense error:', err.response || err);
-      setMessage({ type: 'error', content: err.response?.data?.message || 'Failed to add expense.' });
+      const errMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to add expense.';
+      setMessage({ type: 'error', content: errMsg });
     }
   };
 
@@ -76,12 +81,10 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
       setMessage({ type: 'error', content: 'Please enter a valid, non-negative number for your budget.' });
       return;
     }
-    console.log('Setting budget...', budget);
     try {
       const res = await axios.post(`${API_BASE}/budget`, { budget: numericBudget }, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      console.log('Budget response:', res.data);
       const displayMsg = (typeof res.data.message === 'string' && res.data.message.length > 5)
         ? res.data.message
         : `Monthly budget of ₹${numericBudget.toLocaleString()} updated successfully!`;
@@ -118,7 +121,7 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
                 placeholder="e.g., 50000"
                 value={budget}
                 onChange={handleBudgetChange}
-                className="form-input"
+                className="form-input font-mono tabular-nums"
                 min="0"
                 step="100"
                 inputMode="numeric"
@@ -149,12 +152,12 @@ const DataEntry = ({ token, onExpenseAdded, setActiveTab }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div style={{ position: 'relative' }}>
                 <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>₹</span>
-                <input type="number" name="amount" placeholder="Amount" value={manual.amount} onChange={handleManualChange} required className="form-input" style={{ paddingLeft: '1.75rem' }} />
+                <input type="number" name="amount" placeholder="Amount" value={manual.amount} onChange={handleManualChange} required className="form-input font-mono tabular-nums" style={{ paddingLeft: '1.75rem' }} />
               </div>
               <input type="text" name="vendor" placeholder="Vendor" value={manual.vendor} onChange={handleManualChange} required className="form-input" />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <input type="date" name="date" value={manual.date} onChange={handleManualChange} required className="form-input" />
+              <input type="date" name="date" value={manual.date} onChange={handleManualChange} required className="form-input font-mono" />
               <input type="text" name="category" placeholder="Category" value={manual.category} onChange={handleManualChange} className="form-input" />
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}><Send size={16} /> Add Expense</button>

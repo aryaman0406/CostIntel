@@ -4,23 +4,34 @@ import { User, Activity, FileText } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
+const fmtINR = (val) => `₹${Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
 const ProfileCard = ({ profile, profilePic, onProfilePicChange }) => (
   <div className="card card-3d">
-    <h3 className="card-title"><User size={18} /> Account Details</h3>
+    <h3 className="card-title"><User size={18} style={{ color: 'var(--primary)' }} /> Account Details</h3>
     <div className="profile-details">
-      <div className="profile-pic-container" onClick={() => document.getElementById('profilePicInput').click()}>
+      <div className="profile-pic-container" onClick={() => document.getElementById('profilePicInput').click()} title="Click to upload profile photo">
         {profilePic ? (
           <img src={profilePic} alt="Profile" className="profile-pic" />
         ) : (
-          <div className="profile-pic-placeholder"><User size={40} /></div>
+          <div className="profile-pic-placeholder"><User size={36} /></div>
         )}
         <div className="profile-pic-edit-overlay">EDIT</div>
         <input type="file" id="profilePicInput" accept="image/*" style={{ display: 'none' }} onChange={onProfilePicChange} />
       </div>
       <div className="profile-info">
-        <div className="info-row"><span>Email</span><strong>{profile?.email}</strong></div>
-        <div className="info-row"><span>Member Since</span><strong>{profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : '—'}</strong></div>
-        <div className="info-row"><span>Monthly Budget</span><strong>₹{(profile?.monthly_budget || 0).toLocaleString()}</strong></div>
+        <div className="info-row">
+          <span>Email</span>
+          <strong style={{ wordBreak: 'break-all' }}>{profile?.email || '—'}</strong>
+        </div>
+        <div className="info-row">
+          <span>Member Since</span>
+          <strong className="font-mono tabular-nums">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : '—'}</strong>
+        </div>
+        <div className="info-row">
+          <span>Monthly Budget</span>
+          <strong className="font-mono tabular-nums" style={{ color: 'var(--primary)' }}>{fmtINR(profile?.monthly_budget)}</strong>
+        </div>
       </div>
     </div>
   </div>
@@ -28,14 +39,14 @@ const ProfileCard = ({ profile, profilePic, onProfilePicChange }) => (
 
 const ActivityCard = ({ profile }) => (
   <div className="card card-3d">
-    <h3 className="card-title"><Activity size={18} /> Lifetime Activity</h3>
+    <h3 className="card-title"><Activity size={18} style={{ color: 'var(--accent)' }} /> Lifetime Activity</h3>
     <div className="activity-metrics">
       <div className="metric-item">
-        <div className="metric-value primary">{profile?.expense_count || 0}</div>
+        <div className="metric-value primary font-mono tabular-nums">{Number(profile?.expense_count || 0).toLocaleString('en-IN')}</div>
         <div className="metric-label">Total Logs</div>
       </div>
       <div className="metric-item">
-        <div className="metric-value">₹{(profile?.total_spent || 0).toLocaleString()}</div>
+        <div className="metric-value font-mono tabular-nums">{fmtINR(profile?.total_spent)}</div>
         <div className="metric-label">Lifetime Spend</div>
       </div>
     </div>
@@ -62,10 +73,10 @@ const ExpenseHistory = ({ expenses, onActionClick, onExport }) => (
           <tbody>
             {expenses.map((e) => (
               <tr key={e.id}>
-                <td>{e.date}</td>
+                <td className="font-mono tabular-nums">{e.date}</td>
                 <td className="font-semibold">{e.vendor}</td>
                 <td><span className="status-badge">{e.category || '—'}</span></td>
-                <td className="font-bold text-right">₹{e.amount.toLocaleString()}</td>
+                <td className="font-bold text-right font-mono tabular-nums">{fmtINR(e.amount)}</td>
               </tr>
             ))}
           </tbody>
@@ -105,7 +116,7 @@ const UsersTable = ({ users }) => (
                     {u.status || 'unknown'}
                   </span>
                 </td>
-                <td className="text-right">₹{(u.monthly_budget || 0).toLocaleString()}</td>
+                <td className="text-right font-mono tabular-nums">{fmtINR(u.monthly_budget)}</td>
               </tr>
             ))}
           </tbody>

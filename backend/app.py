@@ -65,11 +65,17 @@ def create_app(config_name="default"):
     from routes.user_routes import user_bp
     from routes.expense_routes import expense_bp
     from routes.agent_routes import agent_bp
+    from routes.audit_routes import audit_bp
+    from routes.anomaly_routes import anomaly_bp
+    from routes.reconciliation_routes import reconciliation_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api")
     app.register_blueprint(user_bp, url_prefix="/api")
     app.register_blueprint(expense_bp, url_prefix="/api/expenses")
     app.register_blueprint(agent_bp, url_prefix="/api")
+    app.register_blueprint(audit_bp, url_prefix="/api")
+    app.register_blueprint(anomaly_bp, url_prefix="/api")
+    app.register_blueprint(reconciliation_bp, url_prefix="/api")
 
     # ── Health Check (no auth required) ──
     @app.route("/api/health", methods=["GET"])
@@ -96,6 +102,16 @@ def create_app(config_name="default"):
         """GET / — Root health check for Render."""
         return success_response({"status": "online"}, "Service is live")
 
+    # ── Enterprise Security Headers ──
+    @app.after_request
+    def set_security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        return response
+
     # ── Error Handlers ──
     register_error_handlers(app)
 
@@ -104,6 +120,7 @@ def create_app(config_name="default"):
 
     # ── Database setup + seeding ──
     with app.app_context():
+        import models  # Ensure all SQLAlchemy models are registered on metadata
         db.create_all()
         seed_default_admin()
         cleanup_legacy_seeded_expenses()

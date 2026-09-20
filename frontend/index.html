@@ -1,12 +1,50 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CostIntel — Autonomous Cost Governance and AI FinOps Controller. Reconcile ledgers, detect cost anomalies, and ask your Gemini-powered CFO agent anything." />
+    <meta name="theme-color" content="#05060f" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CostIntel — Autonomous Cost Governance & AI FinOps Controller" />
+    <meta property="og:description" content="Reconcile every ledger against every bank statement, catch cost leaks with explainable statistics, and ask a Gemini-powered CFO agent anything — all backed by an immutable audit trail." />
+    <meta property="og:image" content="/dashboard_preview_1774761879313.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CostIntel — Autonomous FinOps AI Platform" />
+    <meta name="twitter:description" content="3-tier reconciliation, statistical anomaly detection, and a Gemini CFO agent for Indian finance teams." />
+
+    <!-- Canonical is handled by server / SPA redirect rules -->
+
+    <!-- Preconnect for Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <title>CostIntel — Autonomous Cost Intelligence</title>
+    <!-- Space Grotesk preloaded for landing hero headings -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <title>CostIntel — Autonomous Cost Governance & AI FinOps Controller</title>
+
+    <!-- Prevent flash of wrong theme — runs before first paint -->
+    <script>
+      (function() {
+        var theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.style.background = theme === 'dark' ? '#05060f' : '#f6f7ff';
+      })();
+    </script>
+
+    <style>
+      /* Prevent FOUC */
+      html { background: #05060f; }
+      [data-theme='light'] html { background: #f6f7ff; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

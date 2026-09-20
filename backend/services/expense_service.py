@@ -3,7 +3,7 @@ CostIntel — Expense Management Service
 CRUD operations, filtering, search, soft-delete, and restore for expenses.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 import csv
 from extensions import db
 from models import Expense, VALID_CATEGORIES
@@ -208,7 +208,7 @@ def soft_delete_expense(expense_id):
         return None, "Expense not found"
 
     expense.is_deleted = True
-    expense.deleted_at = datetime.utcnow()
+    expense.deleted_at = datetime.now(timezone.utc)
     db.session.commit()
 
     return expense.to_dict(), None

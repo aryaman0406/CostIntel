@@ -1,0 +1,587 @@
+[
+  {
+    "id": "LDG-0001",
+    "vendor": "Notion Labs Inc",
+    "amount": 9907.48,
+    "date": "2026-06-11",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000001"
+  },
+  {
+    "id": "LDG-0002",
+    "vendor": "Zoom Video Communications",
+    "amount": 12290.95,
+    "date": "2026-04-28",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000002"
+  },
+  {
+    "id": "LDG-0003",
+    "vendor": "Microsoft Azure",
+    "amount": 50396.62,
+    "date": "2026-04-10",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000003"
+  },
+  {
+    "id": "LDG-0004",
+    "vendor": "Microsoft Azure",
+    "amount": 18974.91,
+    "date": "2026-08-09",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000004"
+  },
+  {
+    "id": "LDG-0005",
+    "vendor": "Amazon Web Services",
+    "amount": 47925.21,
+    "date": "2026-09-15",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000005"
+  },
+  {
+    "id": "LDG-0006",
+    "vendor": "Datadog Inc",
+    "amount": 19127.23,
+    "date": "2026-08-30",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000006"
+  },
+  {
+    "id": "LDG-0007",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 73955.88,
+    "date": "2026-05-12",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000007"
+  },
+  {
+    "id": "LDG-0008",
+    "vendor": "GitHub Inc",
+    "amount": 23980.13,
+    "date": "2026-05-27",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000008"
+  },
+  {
+    "id": "LDG-0009",
+    "vendor": "Microsoft Azure",
+    "amount": 8337.02,
+    "date": "2026-04-26",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000009"
+  },
+  {
+    "id": "LDG-0010",
+    "vendor": "Salesforce Inc",
+    "amount": 29564.26,
+    "date": "2026-06-08",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000010"
+  },
+  {
+    "id": "LDG-0011",
+    "vendor": "Figma Inc",
+    "amount": 39321.4,
+    "date": "2026-05-03",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000011"
+  },
+  {
+    "id": "LDG-0012",
+    "vendor": "Microsoft Azure",
+    "amount": 47147.43,
+    "date": "2026-09-09",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000012"
+  },
+  {
+    "id": "LDG-0013",
+    "vendor": "Cloudflare Inc",
+    "amount": 73314.23,
+    "date": "2026-08-27",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000013"
+  },
+  {
+    "id": "LDG-0014",
+    "vendor": "Figma Inc",
+    "amount": 6377.41,
+    "date": "2026-09-18",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000014"
+  },
+  {
+    "id": "LDG-0015",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 24953.28,
+    "date": "2026-04-22",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000015"
+  },
+  {
+    "id": "LDG-0016",
+    "vendor": "Salesforce Inc",
+    "amount": 9034.62,
+    "date": "2026-06-12",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000016"
+  },
+  {
+    "id": "LDG-0017",
+    "vendor": "Notion Labs Inc",
+    "amount": 70982.33,
+    "date": "2026-05-13",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000017"
+  },
+  {
+    "id": "LDG-0018",
+    "vendor": "GitHub Inc",
+    "amount": 18203.34,
+    "date": "2026-06-09",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000018"
+  },
+  {
+    "id": "LDG-0019",
+    "vendor": "HubSpot Inc",
+    "amount": 54155.67,
+    "date": "2026-08-16",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000019"
+  },
+  {
+    "id": "LDG-0020",
+    "vendor": "Google Cloud Platform",
+    "amount": 39560.99,
+    "date": "2026-06-10",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000020"
+  },
+  {
+    "id": "LDG-0021",
+    "vendor": "Zoom Video Communications",
+    "amount": 58349.9,
+    "date": "2026-04-16",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000021"
+  },
+  {
+    "id": "LDG-0022",
+    "vendor": "Salesforce Inc",
+    "amount": 3212.47,
+    "date": "2026-06-21",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000022"
+  },
+  {
+    "id": "LDG-0023",
+    "vendor": "Slack Technologies",
+    "amount": 6092.94,
+    "date": "2026-08-25",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000023"
+  },
+  {
+    "id": "LDG-0024",
+    "vendor": "Zoom Video Communications",
+    "amount": 55884.57,
+    "date": "2026-07-12",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000024"
+  },
+  {
+    "id": "LDG-0025",
+    "vendor": "Google Cloud Platform",
+    "amount": 22882.37,
+    "date": "2026-06-04",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000025"
+  },
+  {
+    "id": "LDG-0026",
+    "vendor": "Twilio Inc",
+    "amount": 22701.67,
+    "date": "2026-08-29",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000026"
+  },
+  {
+    "id": "LDG-0027",
+    "vendor": "Cloudflare Inc",
+    "amount": 49808.53,
+    "date": "2026-07-03",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000027"
+  },
+  {
+    "id": "LDG-0028",
+    "vendor": "Google Cloud Platform",
+    "amount": 43554.97,
+    "date": "2026-04-25",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000028"
+  },
+  {
+    "id": "LDG-0029",
+    "vendor": "Salesforce Inc",
+    "amount": 9765.35,
+    "date": "2026-09-09",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000029"
+  },
+  {
+    "id": "LDG-0030",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 58000.66,
+    "date": "2026-09-01",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000030"
+  },
+  {
+    "id": "LDG-0031",
+    "vendor": "Datadog Inc",
+    "amount": 32746.83,
+    "date": "2026-07-30",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000031"
+  },
+  {
+    "id": "LDG-0032",
+    "vendor": "Slack Technologies",
+    "amount": 82556.12,
+    "date": "2026-04-04",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000032"
+  },
+  {
+    "id": "LDG-0033",
+    "vendor": "Notion Labs Inc",
+    "amount": 75264.62,
+    "date": "2026-06-09",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000033"
+  },
+  {
+    "id": "LDG-0034",
+    "vendor": "Microsoft Azure",
+    "amount": 25300.76,
+    "date": "2026-05-12",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000034"
+  },
+  {
+    "id": "LDG-0035",
+    "vendor": "Amazon Web Services",
+    "amount": 81097.45,
+    "date": "2026-06-08",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000035"
+  },
+  {
+    "id": "LDG-0036",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 15596.08,
+    "date": "2026-04-29",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000036"
+  },
+  {
+    "id": "LDG-0037",
+    "vendor": "Salesforce Inc",
+    "amount": 54491.23,
+    "date": "2026-09-04",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000037"
+  },
+  {
+    "id": "LDG-0038",
+    "vendor": "Google Cloud Platform",
+    "amount": 32095.72,
+    "date": "2026-05-13",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000038"
+  },
+  {
+    "id": "LDG-0039",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 78445.68,
+    "date": "2026-04-02",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000039"
+  },
+  {
+    "id": "LDG-0040",
+    "vendor": "GitHub Inc",
+    "amount": 41787.18,
+    "date": "2026-04-30",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000040"
+  },
+  {
+    "id": "LDG-0041",
+    "vendor": "Cloudflare Inc",
+    "amount": 83759.66,
+    "date": "2026-06-19",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000041"
+  },
+  {
+    "id": "LDG-0042",
+    "vendor": "Amazon Web Services",
+    "amount": 20853.65,
+    "date": "2026-08-25",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000042"
+  },
+  {
+    "id": "LDG-0043",
+    "vendor": "Microsoft Azure",
+    "amount": 62346.19,
+    "date": "2026-04-19",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000043"
+  },
+  {
+    "id": "LDG-0044",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 11126.76,
+    "date": "2026-09-17",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000044"
+  },
+  {
+    "id": "LDG-0045",
+    "vendor": "Twilio Inc",
+    "amount": 14453.23,
+    "date": "2026-08-15",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000045"
+  },
+  {
+    "id": "LDG-0046",
+    "vendor": "Datadog Inc",
+    "amount": 81988.67,
+    "date": "2026-06-20",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000046"
+  },
+  {
+    "id": "LDG-0047",
+    "vendor": "Notion Labs Inc",
+    "amount": 55414.7,
+    "date": "2026-05-02",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000047"
+  },
+  {
+    "id": "LDG-0048",
+    "vendor": "Zoom Video Communications",
+    "amount": 5910.19,
+    "date": "2026-08-30",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000048"
+  },
+  {
+    "id": "LDG-0049",
+    "vendor": "Amazon Web Services",
+    "amount": 6498.92,
+    "date": "2026-04-19",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000049"
+  },
+  {
+    "id": "LDG-0050",
+    "vendor": "Salesforce Inc",
+    "amount": 28421.21,
+    "date": "2026-09-20",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000050"
+  },
+  {
+    "id": "LDG-0051",
+    "vendor": "Zoom Video Communications",
+    "amount": 46065.27,
+    "date": "2026-06-03",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000051"
+  },
+  {
+    "id": "LDG-0052",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 34896.57,
+    "date": "2026-07-01",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000052"
+  },
+  {
+    "id": "LDG-0053",
+    "vendor": "Datadog Inc",
+    "amount": 39963.58,
+    "date": "2026-04-15",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000053"
+  },
+  {
+    "id": "LDG-0054",
+    "vendor": "Amazon Web Services",
+    "amount": 34521.5,
+    "date": "2026-06-27",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000054"
+  },
+  {
+    "id": "LDG-0055",
+    "vendor": "Zoom Video Communications",
+    "amount": 16572.65,
+    "date": "2026-07-25",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000055"
+  },
+  {
+    "id": "LDG-0056",
+    "vendor": "Google Cloud Platform",
+    "amount": 24037.06,
+    "date": "2026-06-04",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000056"
+  },
+  {
+    "id": "LDG-0057",
+    "vendor": "Atlassian Pty Ltd",
+    "amount": 73284.0,
+    "date": "2026-08-20",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000057"
+  },
+  {
+    "id": "LDG-0058",
+    "vendor": "Notion Labs Inc",
+    "amount": 84939.37,
+    "date": "2026-04-05",
+    "category": "SaaS",
+    "currency": "INR",
+    "reference": "INV-000058"
+  },
+  {
+    "id": "LDG-0059",
+    "vendor": "Google Cloud Platform",
+    "amount": 34841.99,
+    "date": "2026-08-03",
+    "category": "Marketing",
+    "currency": "INR",
+    "reference": "INV-000059"
+  },
+  {
+    "id": "LDG-0060",
+    "vendor": "Amazon Web Services",
+    "amount": 36585.5,
+    "date": "2026-05-14",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000060"
+  },
+  {
+    "id": "LDG-0061",
+    "vendor": "Microsoft Azure",
+    "amount": 13232.27,
+    "date": "2026-07-10",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000061"
+  },
+  {
+    "id": "LDG-0062",
+    "vendor": "Google Cloud Platform",
+    "amount": 6773.66,
+    "date": "2026-07-27",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000062"
+  },
+  {
+    "id": "LDG-0063",
+    "vendor": "Datadog Inc",
+    "amount": 21317.15,
+    "date": "2026-09-18",
+    "category": "Infrastructure",
+    "currency": "INR",
+    "reference": "INV-000063"
+  },
+  {
+    "id": "LDG-0064",
+    "vendor": "Twilio Inc",
+    "amount": 4732.84,
+    "date": "2026-05-11",
+    "category": "Operations",
+    "currency": "INR",
+    "reference": "INV-000064"
+  },
+  {
+    "id": "LDG-0065",
+    "vendor": "Amazon Web Services",
+    "amount": 9950.16,
+    "date": "2026-08-18",
+    "category": "Cloud",
+    "currency": "INR",
+    "reference": "INV-000065"
+  }
+]

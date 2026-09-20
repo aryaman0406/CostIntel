@@ -11,6 +11,8 @@ const EmptyState = ({ title, desc, onActionClick }) => (
     </div>
   );
 
+const fmtINR = (val) => `₹${Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
 const SimulatorTab = ({ hasData, runSim, simLoading, simulation, setActiveTab }) => {
   if (!hasData) {
     return <EmptyState 
@@ -33,20 +35,20 @@ const SimulatorTab = ({ hasData, runSim, simLoading, simulation, setActiveTab })
         {simLoading && <p className="loading-text">Running...</p>}
         {simulation && (
           <div className="simulation-results">
-            <div className="dashboard-grid">
-              <div className="card metric-display"><div className="card-title">Strategy</div><div className="metric capitalize">{simulation.strategy}</div></div>
-              <div className="card metric-display"><div className="card-title">Current</div><div className="metric">₹{simulation.current_run_rate?.toLocaleString()}</div></div>
-              <div className="card metric-display"><div className="card-title">Savings</div><div className="metric text-success">₹{simulation.projected_monthly_savings?.toLocaleString()}/mo</div></div>
-              <div className="card metric-display"><div className="card-title">New Total</div><div className="metric text-primary">₹{simulation.projected_new_total?.toLocaleString()}/mo</div></div>
+            <div className="kpi-grid">
+              <div className="kpi-card-minimal"><div className="kpi-label">Strategy</div><div className="kpi-value capitalize">{simulation.strategy}</div></div>
+              <div className="kpi-card-minimal"><div className="kpi-label">Current</div><div className="kpi-value font-mono tabular-nums">{fmtINR(simulation.current_run_rate)}</div></div>
+              <div className="kpi-card-minimal" style={{ '--kpi-accent': 'var(--success)' }}><div className="kpi-label">Savings</div><div className="kpi-value font-mono tabular-nums" style={{ color: 'var(--success)' }}>{fmtINR(simulation.projected_monthly_savings)}/mo</div></div>
+              <div className="kpi-card-minimal" style={{ '--kpi-accent': 'var(--primary)' }}><div className="kpi-label">New Total</div><div className="kpi-value font-mono tabular-nums" style={{ color: 'var(--primary)' }}>{fmtINR(simulation.projected_new_total)}/mo</div></div>
             </div>
             <div className="info-banners">
               <div className={`alert-banner ${simulation.risk_level === 'High' ? 'danger' : simulation.risk_level === 'Medium' ? 'warning' : 'success'}`}>Risk: <strong>{simulation.risk_level}</strong></div>
-              <div className="alert-banner info">ROI: <strong>{simulation.roi_timeline}</strong></div>
-              <div className="alert-banner info">Confidence: <strong>{simulation.confidence_score ?? 0}% ({simulation.confidence_band || 'N/A'})</strong></div>
+              <div className="alert-banner info font-mono tabular-nums">ROI: <strong>{simulation.roi_timeline}</strong></div>
+              <div className="alert-banner info font-mono tabular-nums">Confidence: <strong>{Number(simulation.confidence_score ?? 0).toFixed(1)}% ({simulation.confidence_band || 'N/A'})</strong></div>
             </div>
-            <div className="dashboard-grid" style={{ marginTop: '0.75rem' }}>
-              <div className="card metric-display"><div className="card-title">Implementation Cost</div><div className="metric">₹{simulation.one_time_implementation_cost?.toLocaleString?.() ?? 0}</div></div>
-              <div className="card metric-display"><div className="card-title">Annual Net Impact</div><div className="metric text-success">₹{simulation.annual_net_impact?.toLocaleString?.() ?? 0}</div></div>
+            <div className="kpi-grid" style={{ marginTop: '0.75rem' }}>
+              <div className="kpi-card-minimal"><div className="kpi-label">Implementation Cost</div><div className="kpi-value font-mono tabular-nums">{fmtINR(simulation.one_time_implementation_cost)}</div></div>
+              <div className="kpi-card-minimal" style={{ '--kpi-accent': 'var(--success)' }}><div className="kpi-label">Annual Net Impact</div><div className="kpi-value font-mono tabular-nums" style={{ color: 'var(--success)' }}>{fmtINR(simulation.annual_net_impact)}</div></div>
             </div>
 
             {Array.isArray(simulation.category_breakdown) && simulation.category_breakdown.length > 0 && (
@@ -66,10 +68,10 @@ const SimulatorTab = ({ hasData, runSim, simLoading, simulation, setActiveTab })
                     {simulation.category_breakdown.map((row) => (
                       <tr key={row.category}>
                         <td className="font-semibold">{row.category}</td>
-                        <td>₹{Number(row.current || 0).toLocaleString()}</td>
-                        <td>{row.reduction_pct}%</td>
-                        <td className="text-success">₹{Number(row.projected_savings || 0).toLocaleString()}</td>
-                        <td>₹{Number(row.projected_new_total || 0).toLocaleString()}</td>
+                        <td className="font-mono tabular-nums">{fmtINR(row.current)}</td>
+                        <td className="font-mono tabular-nums">{Number(row.reduction_pct || 0).toFixed(1)}%</td>
+                        <td className="text-success font-mono tabular-nums">{fmtINR(row.projected_savings)}</td>
+                        <td className="font-mono tabular-nums">{fmtINR(row.projected_new_total)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -95,8 +97,8 @@ const SimulatorTab = ({ hasData, runSim, simLoading, simulation, setActiveTab })
                   <BarChart data={[{ name: 'Current', value: simulation.current_run_rate }, { name: `After (${simulation.strategy})`, value: simulation.projected_new_total }]}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} />
-                    <YAxis stroke="var(--text-secondary)" fontSize={12} />
-                    <Tooltip formatter={(v) => `₹${v.toLocaleString()}`} />
+                    <YAxis stroke="var(--text-secondary)" fontSize={12} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
+                    <Tooltip formatter={(v) => [fmtINR(v), 'Run Rate']} />
                     <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                       <Cell fill="var(--text-secondary)" />
                       <Cell fill="var(--success)" />
