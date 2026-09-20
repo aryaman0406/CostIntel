@@ -121,9 +121,16 @@ def create_app(config_name="default"):
     # ── Database setup + seeding ──
     with app.app_context():
         import models  # Ensure all SQLAlchemy models are registered on metadata
-        db.create_all()
-        seed_default_admin()
-        cleanup_legacy_seeded_expenses()
+        try:
+            db.create_all()
+            seed_default_admin()
+            cleanup_legacy_seeded_expenses()
+            logger.info("Database schemas and seeding verified.")
+        except Exception as e:
+            logger.error(
+                f"Database initialization deferred/failed: {e}. "
+                "Please verify DATABASE_URL or restore paused database instance."
+            )
 
     logger.info("CostIntel backend initialized successfully")
     return app
