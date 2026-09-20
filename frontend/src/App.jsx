@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import { Shield } from 'lucide-react';
 
 import LandingPage from './landing/LandingPage';
 import Auth from './Auth';
@@ -23,6 +24,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000;
 
 function App() {
+  const location = useLocation();
   const [data, setData] = useState(null);
   const [simulation, setSimulation] = useState(null);
   const [profile, setProfile] = useState(null);
