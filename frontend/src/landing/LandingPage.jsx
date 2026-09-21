@@ -15,8 +15,9 @@ import './LandingPage.css';
 
 import Navbar            from './components/Navbar';
 import CustomCursor      from './components/CustomCursor';
-import AuthModal         from './auth/AuthModal';
-import PrivacyModal      from './components/PrivacyModal';
+
+const AuthModal    = React.lazy(() => import('./auth/AuthModal'));
+const PrivacyModal = React.lazy(() => import('./components/PrivacyModal'));
 
 import Hero              from './sections/Hero';
 import ProblemsStrip     from './sections/ProblemsStrip';
@@ -206,21 +207,27 @@ export default function LandingPage({ onAuthSuccess }) {
 
       {/* Auth modal — rendered as portal to <body> */}
       {modalOpen && (
-        <AuthModal
-          mode={modalMode}
-          onClose={closeModal}
-          onSuccess={handleAuthSuccess}
-          onModeChange={handleModeChange}
-          onOpenPrivacy={openPrivacy}
-          prefillEmail={prefillEmail}
-        />
+        <React.Suspense fallback={null}>
+          <AuthModal
+            mode={modalMode}
+            onClose={closeModal}
+            onSuccess={handleAuthSuccess}
+            onModeChange={handleModeChange}
+            onOpenPrivacy={openPrivacy}
+            prefillEmail={prefillEmail}
+          />
+        </React.Suspense>
       )}
 
       {/* Privacy & Security Notice Modal */}
-      <PrivacyModal
-        isOpen={privacyOpen}
-        onClose={closePrivacy}
-      />
+      {privacyOpen && (
+        <React.Suspense fallback={null}>
+          <PrivacyModal
+            isOpen={privacyOpen}
+            onClose={closePrivacy}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 }

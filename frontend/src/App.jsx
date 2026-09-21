@@ -4,19 +4,21 @@ import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-
 import { Shield } from 'lucide-react';
 
 import LandingPage from './landing/LandingPage';
-import Auth from './Auth';
-import DataEntry from './DataEntry';
-import Layout from './components/Layout';
-import OverviewTab from './components/tabs/OverviewTab';
-import DashboardTab from './components/tabs/DashboardTab';
-import ProfileTab from './components/tabs/ProfileTab';
-import MonitoringTab from './components/tabs/MonitoringTab';
-import SimulatorTab from './components/tabs/SimulatorTab';
-import ImpactCalculatorTab from './components/tabs/ImpactCalculatorTab';
-import CFOChatTab from './components/tabs/CFOChatTab';
-import AuditTrailTab from './components/tabs/AuditTrailTab';
-import AnomalyTab from './components/tabs/AnomalyTab';
-import ReconciliationTab from './components/tabs/ReconciliationTab';
+
+// Lazy load authenticated dashboard components & heavy analytics
+const Auth = React.lazy(() => import('./Auth'));
+const DataEntry = React.lazy(() => import('./DataEntry'));
+const Layout = React.lazy(() => import('./components/Layout'));
+const OverviewTab = React.lazy(() => import('./components/tabs/OverviewTab'));
+const DashboardTab = React.lazy(() => import('./components/tabs/DashboardTab'));
+const ProfileTab = React.lazy(() => import('./components/tabs/ProfileTab'));
+const MonitoringTab = React.lazy(() => import('./components/tabs/MonitoringTab'));
+const SimulatorTab = React.lazy(() => import('./components/tabs/SimulatorTab'));
+const ImpactCalculatorTab = React.lazy(() => import('./components/tabs/ImpactCalculatorTab'));
+const CFOChatTab = React.lazy(() => import('./components/tabs/CFOChatTab'));
+const AuditTrailTab = React.lazy(() => import('./components/tabs/AuditTrailTab'));
+const AnomalyTab = React.lazy(() => import('./components/tabs/AnomalyTab'));
+const ReconciliationTab = React.lazy(() => import('./components/tabs/ReconciliationTab'));
 
 import './index.css';
 
@@ -341,7 +343,23 @@ function App() {
         {/* /login kept as an alias for backward-compat deep links */}
         <Route path="/login" element={<Navigate to="/?modal=login" replace />} />
         {/* Old Auth component kept in case it's linked from somewhere else */}
-        <Route path="/auth" element={<Auth setAuthParams={setToken} />} />
+        <Route
+          path="/auth"
+          element={
+            <React.Suspense
+              fallback={
+                <div className="loading-screen" data-theme={theme}>
+                  <div className="loading-logo">
+                    <Shield size={24} />
+                  </div>
+                  <p>Loading CostIntel...</p>
+                </div>
+              }
+            >
+              <Auth setAuthParams={setToken} />
+            </React.Suspense>
+          }
+        />
         {/* Any other path → landing with login modal + redirect hint */}
         <Route
           path="*"
@@ -428,7 +446,33 @@ function App() {
   return (
     <Routes>
       {/* When authenticated, / is the dashboard (same as before) */}
-      <Route path="/*" element={<Layout {...layoutProps}>{renderActiveTab()}</Layout>} />
+      <Route
+        path="/*"
+        element={
+          <React.Suspense
+            fallback={
+              <div className="loading-screen" data-theme={theme}>
+                <div className="loading-logo">
+                  <Shield size={24} />
+                </div>
+                <p>Loading CostIntel...</p>
+              </div>
+            }
+          >
+            <Layout {...layoutProps}>
+              <React.Suspense
+                fallback={
+                  <div className="tab-loading-spinner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
+                    <Shield size={24} className="animate-spin" />
+                  </div>
+                }
+              >
+                {renderActiveTab()}
+              </React.Suspense>
+            </Layout>
+          </React.Suspense>
+        }
+      />
     </Routes>
   );
 }
