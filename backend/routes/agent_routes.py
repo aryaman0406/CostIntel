@@ -35,7 +35,7 @@ def get_dashboard():
 
 @agent_bp.route("/monitoring/run", methods=["POST"])
 @jwt_required()
-@require_role("Viewer", "Analyst", "Admin")
+@require_role("Analyst", "Admin")
 def run_monitoring():
     """Run a full monitoring cycle. Persists a MonitoringRun row and adds
     records_scanned / issues_found / estimated_savings to the response."""
@@ -547,7 +547,7 @@ def generate_report():
 
 @agent_bp.route("/upload-csv", methods=["POST"])
 @jwt_required()
-@require_role("Viewer", "Analyst", "Admin")
+@require_role("Analyst", "Admin")
 def upload_csv():
     if 'file' not in request.files:
         return error_response("No file part", 400)
@@ -564,7 +564,7 @@ def upload_csv():
 
 @agent_bp.route("/add-expense", methods=["POST"])
 @jwt_required()
-@require_role("Viewer", "Analyst", "Admin")
+@require_role("Analyst", "Admin")
 def add_manual_expense():
     data = request.get_json(silent=True) or {}
     user_id = int(get_jwt_identity())
@@ -576,7 +576,7 @@ def add_manual_expense():
 
 @agent_bp.route("/budget", methods=["POST"])
 @jwt_required()
-@require_role("Viewer", "Analyst", "Admin")
+@require_role("Viewer", "Analyst", "Admin")  # Viewers can update their own budget
 def set_budget():
     data = request.get_json(silent=True) or {}
     budget = data.get('budget', 0)

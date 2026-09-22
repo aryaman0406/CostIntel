@@ -6,7 +6,7 @@ import {
   ChevronRight, Send, Zap, Bell
 } from 'lucide-react';
 
-const NAV_GROUPS = [
+const ALL_NAV_GROUPS = [
   {
     title: 'General',
     items: [
@@ -17,7 +17,7 @@ const NAV_GROUPS = [
     title: 'Expenses',
     items: [
       { key: 'dashboard',  icon: LayoutDashboard, label: 'Dashboard' },
-      { key: 'data-entry', icon: UploadCloud,      label: 'Import / Ingest' },
+      { key: 'data-entry', icon: UploadCloud, label: 'Import / Ingest', minRole: 'Analyst' },
     ],
   },
   {
@@ -38,6 +38,26 @@ const NAV_GROUPS = [
     ],
   },
 ];
+
+// Role hierarchy: higher index = more permissions
+const ROLE_RANK = { Viewer: 0, Analyst: 1, Admin: 2 };
+
+const getNavGroups = (role) => {
+  const rank = ROLE_RANK[role] ?? 0;
+  return ALL_NAV_GROUPS.map(group => ({
+    ...group,
+    items: group.items.filter(item => {
+      if (!item.minRole) return true;
+      return rank >= (ROLE_RANK[item.minRole] ?? 0);
+    }),
+  })).filter(group => group.items.length > 0);
+};
+
+const ROLE_BADGE_STYLE = {
+  Admin:   { bg: 'rgba(191,49,82,0.18)',  color: '#e05c7a',  label: 'Admin' },
+  Analyst: { bg: 'rgba(79,140,255,0.18)', color: '#4f8cff',  label: 'Analyst' },
+  Viewer:  { bg: 'rgba(139,92,246,0.18)', color: '#a78bfa',  label: 'Viewer' },
+};
 
 const SidebarItem = ({ item, activeTab, setActiveTab, closeMobile }) => {
   const IconComponent = item.icon;
@@ -93,9 +113,9 @@ const Sidebar = ({
           </button>
         </div>
 
-        {/* Navigation Groups */}
+        {/* Navigation Groups — filtered by role */}
         <nav className="sidebar-nav">
-          {NAV_GROUPS.map((group) => (
+          {getNavGroups(profile?.role).map((group) => (
             <div key={group.title} className="nav-group">
               <div className="nav-group-title">{group.title}</div>
               {group.items.map((item) => (
@@ -126,7 +146,27 @@ const Sidebar = ({
             </div>
             <div className="user-info-text">
               <div className="user-info-name">{profile?.full_name || 'User'}</div>
-              <div className="user-info-role font-mono tabular-nums">{profile?.role || 'Viewer'}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+                {(() => {
+                  const role = profile?.role || 'Viewer';
+                  const style = ROLE_BADGE_STYLE[role] || ROLE_BADGE_STYLE.Viewer;
+                  return (
+                    <span style={{
+                      background: style.bg,
+                      color: style.color,
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      padding: '1px 8px',
+                      borderRadius: 20,
+                      letterSpacing: '0.05em',
+                      textTransform: 'uppercase',
+                      fontFamily: 'monospace',
+                    }}>
+                      {style.label}
+                    </span>
+                  );
+                })()}
+              </div>
             </div>
             <ChevronRight size={13} style={{ color: 'var(--text-faint)', flexShrink: 0 }} />
           </div>

@@ -352,9 +352,10 @@ const ExceptionRow = ({ ex, idx }) => {
 
 // ── Main Component ───────────────────────────────────────────
 
-const ReconciliationTab = ({ reconResult, reconLoading, onRunRecon }) => {
+const ReconciliationTab = ({ reconResult, reconLoading, onRunRecon, userRole = 'Viewer' }) => {
   const [running, setRunning] = useState(false);
-  const [activeSubTab, setActiveSubTab] = useState('all'); // 'all' | 'exceptions' | 'exact' | 'tolerant' | 'fuzzy'
+  const [activeSubTab, setActiveSubTab] = useState('all');
+  const canRun = userRole === 'Analyst' || userRole === 'Admin';
 
   const handleRun = async () => {
     setRunning(true);
@@ -398,15 +399,26 @@ const ReconciliationTab = ({ reconResult, reconLoading, onRunRecon }) => {
           <h2 className="section-heading">Multi-Source Reconciliation</h2>
           {r && <span className="pulse-dot active" />}
         </div>
-        <button
-          id="recon-run-btn"
-          className="btn btn-primary"
-          onClick={handleRun}
-          disabled={running || reconLoading}
-        >
-          <RefreshCw size={14} className={(running || reconLoading) ? 'animate-spin' : ''} />
-          {running || reconLoading ? 'Running...' : 'Run Reconciliation'}
-        </button>
+        {canRun ? (
+          <button
+            id="recon-run-btn"
+            className="btn btn-primary"
+            onClick={handleRun}
+            disabled={running || reconLoading}
+          >
+            <RefreshCw size={14} className={(running || reconLoading) ? 'animate-spin' : ''} />
+            {running || reconLoading ? 'Running...' : 'Run Reconciliation'}
+          </button>
+        ) : (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(139,92,246,0.10)', color: '#a78bfa',
+            borderRadius: 8, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600,
+          }}>
+            <GitMerge size={13} />
+            View-only — Analyst+ can run reconciliation
+          </div>
+        )}
       </div>
 
       {/* ── Empty State ────────────────────────────────────── */}
@@ -415,13 +427,16 @@ const ReconciliationTab = ({ reconResult, reconLoading, onRunRecon }) => {
           <GitMerge size={52} className="empty-state-icon" style={{ color: 'var(--primary)' }} />
           <h3 className="empty-state-title">No Reconciliation Run Yet</h3>
           <p className="empty-state-description">
-            Click "Run Reconciliation" to match internal ledger records against bank/vendor
-            statement records using 3-tier fuzzy matching with full scoring decomposition.
+            {canRun
+              ? 'Click "Run Reconciliation" to match internal ledger records against bank/vendor statement records using 3-tier fuzzy matching with full scoring decomposition.'
+              : 'No reconciliation has been run yet. An Analyst or Admin must run it first — results will appear here once available.'}
           </p>
-          <button id="recon-start-btn" className="btn btn-primary" onClick={handleRun} disabled={running}>
-            <RefreshCw size={14} className={running ? 'animate-spin' : ''} />
-            {running ? 'Running...' : 'Start Reconciliation'}
-          </button>
+          {canRun && (
+            <button id="recon-start-btn" className="btn btn-primary" onClick={handleRun} disabled={running}>
+              <RefreshCw size={14} className={running ? 'animate-spin' : ''} />
+              {running ? 'Running...' : 'Start Reconciliation'}
+            </button>
+          )}
         </div>
       )}
 

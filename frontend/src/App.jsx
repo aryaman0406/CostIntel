@@ -387,15 +387,18 @@ function App() {
 
   const renderActiveTab = () => {
     const hasData = data?.has_data === true;
+    const userRole = profile?.role || 'Viewer';
     switch (activeTab) {
       case 'dashboard':
         return <DashboardTab data={data} setActiveTab={setActiveTab} />;
       case 'data-entry':
+        // Viewers cannot access data entry — redirect to overview
+        if (userRole === 'Viewer') return <OverviewTab data={data} expensesSummary={expensesSummary} anomalyData={anomalyData} reconResult={reconResult} monitoringStatus={monitoringStatus} monitoringRuns={monitoringRuns} auditLogs={auditLogs} setActiveTab={setActiveTab} />;
         return <DataEntry token={token} onExpenseAdded={fetchAllData} setActiveTab={setActiveTab} />;
       case 'profile':
         return <ProfileTab profile={profile} expensesSummary={expensesSummary} profilePic={profilePic} handleProfilePicChange={handleProfilePicChange} setActiveTab={setActiveTab} adminUsers={adminUsers} token={token} />;
       case 'monitoring':
-        return <MonitoringTab hasData={hasData} triggerMon={triggerMon} monRunning={monRunning} monError={monError} monitoringStatus={monitoringStatus} monitoringHistory={monitoringHistory} monitoringRuns={monitoringRuns} setActiveTab={setActiveTab} />;
+        return <MonitoringTab hasData={hasData} triggerMon={triggerMon} monRunning={monRunning} monError={monError} monitoringStatus={monitoringStatus} monitoringHistory={monitoringHistory} monitoringRuns={monitoringRuns} setActiveTab={setActiveTab} userRole={userRole} />;
       case 'simulator':
         return <SimulatorTab hasData={hasData} runSim={runSim} simLoading={simLoading} simulation={simulation} setActiveTab={setActiveTab} />;
       case 'impact':
@@ -403,11 +406,11 @@ function App() {
       case 'cfo-chat':
         return <CFOChatTab onChat={callChatAPI} />;
       case 'anomalies':
-        return <AnomalyTab anomalyData={anomalyData} onRescore={handleRescore} />;
+        return <AnomalyTab anomalyData={anomalyData} onRescore={handleRescore} userRole={userRole} />;
       case 'audit':
         return <AuditTrailTab auditLogs={auditLogs} />;
       case 'reconciliation':
-        return <ReconciliationTab reconResult={reconResult} reconLoading={reconLoading} onRunRecon={handleRunRecon} />;
+        return <ReconciliationTab reconResult={reconResult} reconLoading={reconLoading} onRunRecon={handleRunRecon} userRole={userRole} />;
       case 'overview':
       default:
         return (

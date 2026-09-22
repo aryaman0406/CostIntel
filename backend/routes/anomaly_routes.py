@@ -10,6 +10,7 @@ from flask import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.response import success_response, error_response
 from services.anomaly_service import get_anomalies_for_user, score_expenses_for_user
+from middleware.rbac import require_role
 
 anomaly_bp = Blueprint("anomaly", __name__)
 
@@ -28,6 +29,7 @@ def list_anomalies():
 
 @anomaly_bp.route("/anomalies/score", methods=["POST"])
 @jwt_required()
+@require_role("Analyst", "Admin")
 def trigger_scoring():
     """POST /api/anomalies/score — run full anomaly scoring and return summary."""
     user_id = int(get_jwt_identity())

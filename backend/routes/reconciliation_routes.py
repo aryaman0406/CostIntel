@@ -15,6 +15,7 @@ from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from utils.response import success_response, error_response
+from middleware.rbac import require_role
 
 reconciliation_bp = Blueprint("reconciliation", __name__)
 logger = logging.getLogger(__name__)
@@ -26,6 +27,7 @@ _last_run_cache: dict = {}
 
 @reconciliation_bp.route("/reconciliation/run", methods=["POST"])
 @jwt_required()
+@require_role("Analyst", "Admin")
 def run_reconciliation():
     """
     Execute the reconciliation matching engine against fixture data.

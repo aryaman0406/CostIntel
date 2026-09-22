@@ -28,9 +28,10 @@ const SeverityBadge = ({ severity }) => {
 const MonitoringTab = ({
   hasData, triggerMon, monRunning, monError,
   monitoringStatus, monitoringHistory, monitoringRuns = [],
-  setActiveTab
+  setActiveTab, userRole = 'Viewer'
 }) => {
   const [runTab, setRunTab] = useState('issues');
+  const canTrigger = userRole === 'Analyst' || userRole === 'Admin';
   const summary = monitoringStatus?.summary ?? monitoringStatus ?? {};
   const opportunities = Array.isArray(summary.top_3_savings_opportunities)
     ? summary.top_3_savings_opportunities
@@ -80,16 +81,27 @@ const MonitoringTab = ({
           <h2 className="section-heading">Continuous Cost Monitoring</h2>
           <span className="pulse-dot active" />
         </div>
-        <button
-          type="button"
-          id="run-monitoring-btn"
-          className="btn btn-primary"
-          onClick={(e) => { e.preventDefault(); triggerMon(); }}
-          disabled={monRunning}
-        >
-          <RefreshCw size={14} className={monRunning ? 'animate-spin' : ''} />
-          {monRunning ? 'Scanning...' : 'Run Monitoring Now'}
-        </button>
+        {canTrigger ? (
+          <button
+            type="button"
+            id="run-monitoring-btn"
+            className="btn btn-primary"
+            onClick={(e) => { e.preventDefault(); triggerMon(); }}
+            disabled={monRunning}
+          >
+            <RefreshCw size={14} className={monRunning ? 'animate-spin' : ''} />
+            {monRunning ? 'Scanning...' : 'Run Monitoring Now'}
+          </button>
+        ) : (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(139,92,246,0.10)', color: '#a78bfa',
+            borderRadius: 8, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600,
+          }}>
+            <Activity size={13} />
+            View-only — Analyst+ can trigger scans
+          </div>
+        )}
       </div>
 
       {monError && <div className="alert-banner danger">{monError}</div>}

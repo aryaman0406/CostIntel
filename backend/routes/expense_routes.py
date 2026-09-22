@@ -79,11 +79,11 @@ def get_expense(expense_id):
 
 @expense_bp.route("/", methods=["POST"], strict_slashes=False)
 @jwt_required()
-@require_role("Viewer", "Analyst", "Admin")
+@require_role("Analyst", "Admin")
 def create_expense():
     """
     POST /api/expenses
-    Create a new expense record.
+    Create a new expense record. Analyst and Admin only.
     """
     data = request.get_json(silent=True)
     if not data:

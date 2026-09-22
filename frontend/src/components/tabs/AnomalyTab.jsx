@@ -88,9 +88,10 @@ const AnomalyCard = ({ anomaly }) => {
   );
 };
 
-const AnomalyTab = ({ anomalyData = [], onRescore }) => {
+const AnomalyTab = ({ anomalyData = [], onRescore, userRole = 'Viewer' }) => {
   const [rescoring, setRescoring] = useState(false);
   const [filter, setFilter] = useState('all');
+  const canRescore = userRole === 'Analyst' || userRole === 'Admin';
 
   const handleRescore = async () => {
     setRescoring(true);
@@ -116,17 +117,28 @@ const AnomalyTab = ({ anomalyData = [], onRescore }) => {
       <div className="monitoring-header">
         <div className="monitoring-title-group">
           <AlertTriangle size={24} className="text-danger" />
-          <h2 className="section-heading">Cost Leak & Anomaly Detector</h2>
+          <h2 className="section-heading">Cost Leak &amp; Anomaly Detector</h2>
         </div>
-        <button
-          id="anomaly-rescore-btn"
-          className="btn btn-primary"
-          onClick={handleRescore}
-          disabled={rescoring}
-        >
-          <RefreshCw size={14} className={rescoring ? 'animate-spin' : ''} />
-          {rescoring ? 'Scanning...' : 'Re-score Expenses'}
-        </button>
+        {canRescore ? (
+          <button
+            id="anomaly-rescore-btn"
+            className="btn btn-primary"
+            onClick={handleRescore}
+            disabled={rescoring}
+          >
+            <RefreshCw size={14} className={rescoring ? 'animate-spin' : ''} />
+            {rescoring ? 'Scanning...' : 'Re-score Expenses'}
+          </button>
+        ) : (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(139,92,246,0.10)', color: '#a78bfa',
+            borderRadius: 8, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600,
+          }}>
+            <Shield size={13} />
+            View-only — Analyst+ can re-score
+          </div>
+        )}
       </div>
 
       {/* Summary cards */}
