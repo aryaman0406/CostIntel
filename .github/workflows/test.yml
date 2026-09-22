@@ -5,6 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:  # Allow manual trigger from GitHub Actions UI
 
 jobs:
   test:
@@ -32,4 +33,4 @@ jobs:
           JWT_SECRET_KEY: test-ci-secret-key-12345
           DATABASE_URL: sqlite:///:memory:
         run: |
-          PYTHONPATH=backend pytest backend/tests/ -v
+          cd backend && python -m pytest tests/ -v --tb=short
