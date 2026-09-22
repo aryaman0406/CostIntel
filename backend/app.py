@@ -123,7 +123,7 @@ def create_app(config_name="default"):
         import models  # Ensure all SQLAlchemy models are registered on metadata
         try:
             db.create_all()
-            seed_default_admin()
+            seed_demo_accounts()
             cleanup_legacy_seeded_expenses()
             logger.info("Database schemas and seeding verified.")
         except Exception as e:
@@ -209,25 +209,54 @@ def register_jwt_callbacks(app):
 # Database Seeding
 # ──────────────────────────────────────────────────────────────
 
-def seed_default_admin():
-    """Seed the default admin user if no users exist in the database."""
+def seed_demo_accounts():
+    """Seed the three demo accounts (Admin, Analyst, Viewer) if they don't exist."""
     from models import User
 
-    if User.query.count() == 0:
-        admin = User(
-            email="admin@costintel.com",
-            full_name="System Admin",
-            role="Admin",
-            status="active",
-            monthly_budget=0.0,
-        )
-        admin.set_password("Admin@123")
-        db.session.add(admin)
-        db.session.commit()
+    DEMO_USERS = [
+        {
+            "email": "admin@costintel.com",
+            "full_name": "System Admin",
+            "role": "Admin",
+            "password": "Admin@123",
+            "monthly_budget": 500000.0,
+        },
+        {
+            "email": "analyst@costintel.com",
+            "full_name": "FinOps Analyst",
+            "role": "Analyst",
+            "password": "Analyst@123",
+            "monthly_budget": 200000.0,
+        },
+        {
+            "email": "viewer@costintel.com",
+            "full_name": "Read-Only Viewer",
+            "role": "Viewer",
+            "password": "Viewer@123",
+            "monthly_budget": 50000.0,
+        },
+    ]
 
-        logger.info("Default admin seeded without sample expenses: admin@costintel.com / Admin@123")
+    seeded = []
+    for demo in DEMO_USERS:
+        existing = User.query.filter_by(email=demo["email"]).first()
+        if not existing:
+            user = User(
+                email=demo["email"],
+                full_name=demo["full_name"],
+                role=demo["role"],
+                status="active",
+                monthly_budget=demo["monthly_budget"],
+            )
+            user.set_password(demo["password"])
+            db.session.add(user)
+            seeded.append(demo["email"])
+
+    if seeded:
+        db.session.commit()
+        logger.info(f"Demo accounts seeded: {', '.join(seeded)}")
     else:
-        logger.info("Users already exist — skipping admin seed")
+        logger.info("All demo accounts already exist — skipping seed")
 
 
 def cleanup_legacy_seeded_expenses():
