@@ -95,27 +95,32 @@ const AuditTrailTab = ({ auditLogs = [], loading = false }) => {
 
   return (
     <div className="fade-in">
+      {/* Header row — stacks on mobile */}
       <div className="monitoring-header">
         <div className="monitoring-title-group">
-          <ClipboardList size={24} className="text-primary" />
+          <ClipboardList size={22} style={{ color: 'var(--primary)', flexShrink: 0 }} />
           <h2 className="section-heading">AI Audit Trail</h2>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Filter size={16} style={{ color: 'var(--text-secondary)' }} />
-          {['all', 'chat', 'monitoring', 'simulation', 'anomaly', 'reconciliation_run'].map(f => (
-            <button
-              key={f}
-              id={`audit-filter-${f}`}
-              className={`btn ${filter === f ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '4px 12px', fontSize: '0.8rem' }}
-              onClick={() => setFilter(f)}
-            >
-              {f === 'all' ? 'All' : f === 'reconciliation_run' ? 'Reconciliation' : f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
-        </div>
+        <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{auditLogs.length} total entries</span>
       </div>
 
+      {/* Filter pills — scrollable on mobile */}
+      <div className="filter-pills" style={{ marginBottom: '1.25rem', alignItems: 'center' }}>
+        <Filter size={14} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+        {['all', 'chat', 'monitoring', 'simulation', 'anomaly', 'reconciliation_run'].map(f => (
+          <button
+            key={f}
+            id={`audit-filter-${f}`}
+            className={`btn ${filter === f ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '4px 10px', fontSize: '0.78rem', flexShrink: 0 }}
+            onClick={() => setFilter(f)}
+          >
+            {f === 'all' ? 'All' : f === 'reconciliation_run' ? 'Recon' : f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {/* KPI summary cards */}
       <div className="kpi-grid" style={{ marginBottom: '1.5rem' }}>
         {['chat', 'monitoring', 'simulation', 'anomaly', 'reconciliation_run'].map(type => {
           const count = auditLogs.filter(l => l.action_type === type).length;
@@ -134,6 +139,7 @@ const AuditTrailTab = ({ auditLogs = [], loading = false }) => {
         })}
       </div>
 
+      {/* Table / empty states */}
       {loading ? (
         <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
           <div className="loading-spinner" />
@@ -152,22 +158,24 @@ const AuditTrailTab = ({ auditLogs = [], loading = false }) => {
           <h3 className="card-title">
             {filteredLogs.length} log{filteredLogs.length !== 1 ? 's' : ''} found
           </h3>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Action</th>
-                <th>Input</th>
-                <th>Data Sources</th>
-                <th style={{ textAlign: 'center' }}>Detail</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredLogs.map((log, i) => (
-                <LogRow key={log.id || i} log={log} />
-              ))}
-            </tbody>
-          </table>
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Action</th>
+                  <th>Input</th>
+                  <th>Data Sources</th>
+                  <th style={{ textAlign: 'center' }}>Detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredLogs.map((log, i) => (
+                  <LogRow key={log.id || i} log={log} />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

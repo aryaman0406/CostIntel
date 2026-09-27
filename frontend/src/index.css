@@ -1800,15 +1800,43 @@ button { font-family: inherit; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
+   RESPONSIVE — MOBILE-FIRST COMPREHENSIVE
 ═══════════════════════════════════════════════════════════════ */
 
+/* Global overflow prevention */
+html, body, #root {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.app-layout {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.main-wrapper {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Mobile sidebar backdrop */
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* === Tablet (<=1080px) === */
 @media (max-width: 1080px) {
   .kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
+/* === Tablet/Small laptop (<=860px) === */
 @media (max-width: 860px) {
   .sidebar {
     position: fixed;
@@ -1816,6 +1844,8 @@ button { font-family: inherit; }
     transform: translateX(-100%);
     box-shadow: var(--shadow-xl);
     z-index: 1000;
+    width: min(260px, 80vw);
+    min-width: unset;
   }
   .sidebar.open { transform: translateX(0); }
   .sidebar-close-btn { display: flex; }
@@ -1825,25 +1855,54 @@ button { font-family: inherit; }
   .auth-hero-section { display: none; }
   .auth-card-premium { padding: 2rem 1.5rem; }
   .data-table-container,
-  .table-responsive {
+  .table-responsive,
+  .table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
   }
-}
-
-@media (max-width: 520px) {
-  .kpi-grid {
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .profile-grid {
     grid-template-columns: 1fr;
   }
-  .chatbot-floating {
-    right: 0.75rem;
-    left: 0.75rem;
-    width: auto;
+}
+
+/* === Mobile (<=640px) === */
+@media (max-width: 640px) {
+  .live-beacon--topbar { display: none; }
+  .theme-switch-option span { display: none; }
+  .theme-switch-option { padding: 0.35rem 0.45rem; }
+  .breadcrumb-current {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-  .card {
+  .main-container { padding: 0.75rem; }
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .kpi-card, .kpi-card-minimal {
+    min-height: 96px;
+    padding: 0.9rem 0.85rem;
+  }
+  .kpi-value { font-size: 1.35rem; }
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .chart-container { height: 220px; min-height: 200px; }
+  .card, .table-card, .audit-card, .anomaly-card, .service-card,
+  .feature-card, .reconciliation-card, .action-card, .metric-card,
+  .data-card, .simulation-results, .shadow-cost-card {
     padding: 1rem;
-    border-radius: var(--radius-md);
   }
   .section-header {
     flex-direction: column;
@@ -1855,6 +1914,146 @@ button { font-family: inherit; }
     overflow-x: auto;
     width: 100%;
     padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+  .chatbot-floating {
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+    bottom: 5rem;
+    height: 400px;
+  }
+  .auth-wrapper {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    flex-direction: column;
+  }
+  .auth-card-premium { padding: 1.5rem 1rem; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .activity-metrics { grid-template-columns: 1fr 1fr; }
+  .table-container,
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .last-run-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+  .recon-stat-chips {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.25rem;
+  }
+  .cfo-chat-page { height: calc(100vh - 110px); }
+  .monitor-grid,
+  .overview-grid,
+  .two-col-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .ledger-tape {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
+/* === Small phone portrait (<=400px) === */
+@media (max-width: 400px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .activity-metrics { grid-template-columns: 1fr; }
+  .top-bar { padding: 0 0.65rem; }
+  .kpi-value { font-size: 1.2rem; }
+  .chatbot-floating {
+    right: 0.25rem;
+    left: 0.25rem;
+    height: 360px;
+  }
+  .sidebar { width: min(240px, 88vw); }
+  .auth-card-premium { padding: 1.25rem 0.85rem; }
+  .main-container { padding: 0.6rem; }
+}
+
+/* ─── Global mobile overflow prevention ───────────────────────── */
+html, body, #root {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.app-layout {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.main-wrapper {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Mobile backdrop for sidebar drawer */
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Live beacon hidden on very small screens */
+@media (max-width: 640px) {
+  .live-beacon--topbar { display: none; }
+}
+
+/* ─── Missing grid classes for tabs ────────────────────────────── */
+.monitoring-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.monitoring-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.monitoring-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.overview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Responsive: monitoring grid */
+@media (max-width: 860px) {
+  .monitoring-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .monitoring-grid {
+    grid-template-columns: 1fr;
+  }
+  .monitoring-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

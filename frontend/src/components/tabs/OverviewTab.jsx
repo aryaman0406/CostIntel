@@ -58,7 +58,6 @@ const OverviewTab = ({
   auditLogs = [],
   setActiveTab
 }) => {
-  // Compute numbers
   const totalSpend = data?.total_cloud != null
     ? (data.total_cloud + data.total_saas + data.total_ops)
     : (expensesSummary?.total_expenses || 0);
@@ -78,7 +77,7 @@ const OverviewTab = ({
       {/* Live Ledger Tape */}
       <LedgerTape auditLogs={auditLogs} />
 
-      {/* Primary KPI Strip (Number-Forward Minimal Chrome) */}
+      {/* Primary KPI Strip */}
       <div className="kpi-grid">
         <div className="kpi-card-minimal" style={{ '--kpi-accent': 'var(--primary)' }}>
           <div className="kpi-label">
@@ -105,7 +104,7 @@ const OverviewTab = ({
             {highAnomalyCount > 0 ? (
               <span style={{ color: 'var(--danger)', fontWeight: 600 }}>{highAnomalyCount} High Severity Outlier(s)</span>
             ) : (
-              <span>Statistical z-score & IQR radar</span>
+              <span>Statistical z-score &amp; IQR radar</span>
             )}
           </div>
         </div>
@@ -137,8 +136,8 @@ const OverviewTab = ({
         </div>
       </div>
 
-      {/* Operational Module Grid */}
-      <div className="grid grid-2" style={{ gap: '1.25rem', marginTop: '0.5rem' }}>
+      {/* Operational Module Grid — 2 cols desktop, 1 col mobile */}
+      <div className="grid-2" style={{ gap: '1.25rem', marginTop: '0.5rem' }}>
         {/* Module 1: Reconciliation Status */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
@@ -154,31 +153,19 @@ const OverviewTab = ({
               Deterministic 3-tier matching engine (Exact, Tolerant ±₹5/3d, Fuzzy SequenceMatcher) with transparent exception triage.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginBottom: '1.25rem' }}>
-              <div style={{ padding: '0.6rem', background: 'var(--surface-alt)', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>EXACT</div>
-                <div className="font-mono tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--success)' }}>
-                  {reconResult?.tier_breakdown?.exact ?? 46}
+            {/* 4-cell tier grid — responsive via auto-fit */}
+            <div className="overview-tier-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(70px, 1fr))', gap: '0.5rem', marginBottom: '1.25rem' }}>
+              {[
+                { label: 'EXACT', value: reconResult?.tier_breakdown?.exact ?? 46, color: 'var(--success)' },
+                { label: 'TOLERANT', value: (reconResult?.tier_breakdown?.tolerant_amount ?? 7) + (reconResult?.tier_breakdown?.tolerant_date ?? 7), color: 'var(--primary)' },
+                { label: 'FUZZY', value: reconResult?.tier_breakdown?.fuzzy ?? 2, color: 'var(--warning)' },
+                { label: 'EXCEPTIONS', value: reconResult?.unresolved_count ?? 6, color: 'var(--danger)' },
+              ].map(({ label, value, color }) => (
+                <div key={label} style={{ padding: '0.6rem', background: 'var(--surface-alt)', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '0.2rem' }}>{label}</div>
+                  <div className="font-mono tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 800, color }}>{value}</div>
                 </div>
-              </div>
-              <div style={{ padding: '0.6rem', background: 'var(--surface-alt)', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>TOLERANT</div>
-                <div className="font-mono tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary)' }}>
-                  {(reconResult?.tier_breakdown?.tolerant_amount ?? 7) + (reconResult?.tier_breakdown?.tolerant_date ?? 7)}
-                </div>
-              </div>
-              <div style={{ padding: '0.6rem', background: 'var(--surface-alt)', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>FUZZY</div>
-                <div className="font-mono tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--warning)' }}>
-                  {reconResult?.tier_breakdown?.fuzzy ?? 2}
-                </div>
-              </div>
-              <div style={{ padding: '0.6rem', background: 'var(--surface-alt)', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>EXCEPTIONS</div>
-                <div className="font-mono tabular-nums" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--danger)' }}>
-                  {reconResult?.unresolved_count ?? 6}
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -187,7 +174,7 @@ const OverviewTab = ({
             onClick={() => setActiveTab('reconciliation')}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
           >
-            <span>Open Reconciliation Queue & Exceptions</span>
+            <span>Open Reconciliation Queue &amp; Exceptions</span>
             <ArrowRight size={16} />
           </button>
         </div>
@@ -218,17 +205,17 @@ const OverviewTab = ({
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
                 {anomalyData.slice(0, 2).map((a, i) => (
-                  <div key={i} style={{ padding: '0.55rem 0.75rem', background: 'var(--surface-alt)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div>
-                      <span style={{ fontWeight: 700, fontSize: '0.84rem' }}>{a.vendor || 'Unknown'}</span>
+                  <div key={i} style={{ padding: '0.55rem 0.75rem', background: 'var(--surface-alt)', borderRadius: '8px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <span className="font-semibold" style={{ fontSize: '0.84rem', wordBreak: 'break-word' }}>{a.vendor || 'Unknown'}</span>
                       <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>({a.category})</span>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
                       <div className="font-mono tabular-nums" style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--danger)' }}>
                         {formatINR(a.amount)}
                       </div>
                       <div className="font-mono tabular-nums" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                        score: {a.score}% (z={a.z_score})
+                        score: {a.score}%
                       </div>
                     </div>
                   </div>
@@ -259,31 +246,24 @@ const OverviewTab = ({
             </div>
 
             <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-              Reasoning agent equipped with autonomous database tools (<code className="font-mono" style={{ fontSize: '0.75rem' }}>get_expense_summary</code>, <code className="font-mono" style={{ fontSize: '0.75rem' }}>run_simulation</code>) and full compliance audit logging.
+              Reasoning agent equipped with autonomous database tools and full compliance audit logging.
             </p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '1.25rem' }}>
-              <button
-                className="starter-chip"
-                onClick={() => setActiveTab('cfo-chat')}
-                style={{ fontSize: '0.78rem' }}
-              >
-                💬 "What is my total spend?"
-              </button>
-              <button
-                className="starter-chip"
-                onClick={() => setActiveTab('cfo-chat')}
-                style={{ fontSize: '0.78rem' }}
-              >
-                📊 "Break down costs by category"
-              </button>
-              <button
-                className="starter-chip"
-                onClick={() => setActiveTab('cfo-chat')}
-                style={{ fontSize: '0.78rem' }}
-              >
-                ⚡ "Find top optimization opportunities"
-              </button>
+              {[
+                '💬 "What is my total spend?"',
+                '📊 "Break down costs by category"',
+                '⚡ "Find top optimization opportunities"',
+              ].map((prompt) => (
+                <button
+                  key={prompt}
+                  className="starter-chip"
+                  onClick={() => setActiveTab('cfo-chat')}
+                  style={{ fontSize: '0.78rem' }}
+                >
+                  {prompt}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -303,7 +283,7 @@ const OverviewTab = ({
             <div className="card-header" style={{ marginBottom: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <Activity size={20} style={{ color: 'var(--primary)' }} />
-                <h3 className="card-title" style={{ margin: 0 }}>Autonomous Monitoring & Drift</h3>
+                <h3 className="card-title" style={{ margin: 0 }}>Autonomous Monitoring &amp; Drift</h3>
               </div>
               <span className="badge badge-success font-mono tabular-nums">
                 {monitoringRuns.length} Runs Logged
@@ -315,24 +295,16 @@ const OverviewTab = ({
             </p>
 
             <div style={{ padding: '0.75rem', background: 'var(--surface-alt)', borderRadius: '8px', marginBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Latest Scan Records:</span>
-                <span className="font-mono tabular-nums" style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-                  {latestRun?.records_scanned ?? (data?.expense_count || 65)} records
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Issues Detected:</span>
-                <span className="font-mono tabular-nums" style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--warning)' }}>
-                  {latestRun?.issues_found ?? 4} cost patterns
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Identified Monthly Leakage:</span>
-                <span className="font-mono tabular-nums" style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--success)' }}>
-                  {formatINR(estSavings)}
-                </span>
-              </div>
+              {[
+                { label: 'Latest Scan Records:', value: `${latestRun?.records_scanned ?? (data?.expense_count || 65)} records`, valueStyle: { fontWeight: 700, fontSize: '0.85rem' } },
+                { label: 'Issues Detected:', value: `${latestRun?.issues_found ?? 4} cost patterns`, valueStyle: { fontWeight: 700, fontSize: '0.85rem', color: 'var(--warning)' } },
+                { label: 'Identified Monthly Leakage:', value: formatINR(estSavings), valueStyle: { fontWeight: 800, fontSize: '0.9rem', color: 'var(--success)' } },
+              ].map(({ label, value, valueStyle }) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', flexShrink: 0 }}>{label}</span>
+                  <span className="font-mono tabular-nums" style={valueStyle}>{value}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -341,7 +313,7 @@ const OverviewTab = ({
             onClick={() => setActiveTab('monitoring')}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
           >
-            <span>Run Monitoring Cycle & History</span>
+            <span>Run Monitoring Cycle &amp; History</span>
             <ArrowRight size={16} />
           </button>
         </div>

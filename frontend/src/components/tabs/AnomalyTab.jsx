@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { AlertTriangle, RefreshCw, TrendingUp, Shield } from 'lucide-react';
 
 const severityConfig = {
-  HIGH: { color: 'var(--danger)', bg: 'rgba(191,49,82,0.10)', label: 'HIGH', icon: '🔴' },
-  MEDIUM: { color: 'var(--warning)', bg: 'rgba(184,121,15,0.10)', label: 'MEDIUM', icon: '🟡' },
-  LOW: { color: 'var(--success)', bg: 'rgba(24,140,97,0.10)', label: 'LOW', icon: '🟢' },
+  HIGH:   { color: 'var(--danger)',  bg: 'rgba(191,49,82,0.10)',   label: 'HIGH',   icon: '🔴' },
+  MEDIUM: { color: 'var(--warning)', bg: 'rgba(184,121,15,0.10)',  label: 'MEDIUM', icon: '🟡' },
+  LOW:    { color: 'var(--success)', bg: 'rgba(24,140,97,0.10)',   label: 'LOW',    icon: '🟢' },
 };
 
 const getSeverity = (score) => {
@@ -22,13 +22,15 @@ const ScoreBadge = ({ score }) => {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 5,
+        gap: 4,
         background: cfg.bg,
         color: cfg.color,
         borderRadius: 20,
-        padding: '3px 12px',
+        padding: '2px 10px',
         fontWeight: 700,
-        fontSize: '0.8rem',
+        fontSize: '0.76rem',
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
       }}
     >
       {cfg.icon} {score.toFixed(0)}% {cfg.label}
@@ -54,28 +56,38 @@ const AnomalyCard = ({ anomaly }) => {
 
   return (
     <div className="anomaly-card" style={{ borderLeft: `4px solid ${cfg.color}` }}>
+      {/* Header — responsive flex */}
       <div className="anomaly-card-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <span className="font-semibold">{anomaly.vendor || 'Unknown Vendor'}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
+            <span className="font-semibold" style={{ wordBreak: 'break-word' }}>{anomaly.vendor || 'Unknown Vendor'}</span>
             <ScoreBadge score={anomaly.score} />
           </div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
-            {anomaly.category} · <span className="font-mono tabular-nums">{fmtINR(anomaly.amount)}</span> · <span className="font-mono tabular-nums">{anomaly.flagged_at ? new Date(anomaly.flagged_at).toLocaleDateString() : 'N/A'}</span>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', flexWrap: 'wrap', display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
+            <span>{anomaly.category}</span>
+            <span>·</span>
+            <span className="font-mono tabular-nums">{fmtINR(anomaly.amount)}</span>
+            <span>·</span>
+            <span className="font-mono tabular-nums">
+              {anomaly.flagged_at ? new Date(anomaly.flagged_at).toLocaleDateString() : 'N/A'}
+            </span>
           </div>
         </div>
-        <div style={{ textAlign: 'right', minWidth: 100 }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 4 }}>
+        {/* Detection meta — right side, shrinks gracefully */}
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginBottom: 3 }}>
             Detection: <strong style={{ color: 'var(--text-secondary)' }}>{anomaly.method?.toUpperCase()}</strong>
           </div>
           {anomaly.z_score != null && (
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
               z-score: <strong className="font-mono tabular-nums" style={{ color: cfg.color }}>{anomaly.z_score.toFixed(2)}</strong>
             </div>
           )}
         </div>
       </div>
+
       <ConfidenceBar score={anomaly.score} />
+
       <details style={{ marginTop: 10 }}>
         <summary style={{ cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.82rem', userSelect: 'none' }}>
           Why was this flagged?
@@ -108,15 +120,15 @@ const AnomalyTab = ({ anomalyData = [], onRescore, userRole = 'Viewer' }) => {
     ? allAnomalies
     : allAnomalies.filter(a => getSeverity(a.score) === filter.toUpperCase());
 
-  const high = allAnomalies.filter(a => a.score >= 70).length;
+  const high   = allAnomalies.filter(a => a.score >= 70).length;
   const medium = allAnomalies.filter(a => a.score >= 40 && a.score < 70).length;
-  const low = allAnomalies.filter(a => a.score < 40).length;
+  const low    = allAnomalies.filter(a => a.score < 40).length;
 
   return (
     <div className="fade-in">
       <div className="monitoring-header">
         <div className="monitoring-title-group">
-          <AlertTriangle size={24} className="text-danger" />
+          <AlertTriangle size={22} style={{ color: 'var(--danger)', flexShrink: 0 }} />
           <h2 className="section-heading">Cost Leak &amp; Anomaly Detector</h2>
         </div>
         {canRescore ? (
@@ -125,6 +137,7 @@ const AnomalyTab = ({ anomalyData = [], onRescore, userRole = 'Viewer' }) => {
             className="btn btn-primary"
             onClick={handleRescore}
             disabled={rescoring}
+            style={{ flexShrink: 0 }}
           >
             <RefreshCw size={14} className={rescoring ? 'animate-spin' : ''} />
             {rescoring ? 'Scanning...' : 'Re-score Expenses'}
@@ -134,6 +147,7 @@ const AnomalyTab = ({ anomalyData = [], onRescore, userRole = 'Viewer' }) => {
             display: 'flex', alignItems: 'center', gap: 6,
             background: 'rgba(139,92,246,0.10)', color: '#a78bfa',
             borderRadius: 8, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600,
+            flexShrink: 0,
           }}>
             <Shield size={13} />
             View-only — Analyst+ can re-score
@@ -141,8 +155,8 @@ const AnomalyTab = ({ anomalyData = [], onRescore, userRole = 'Viewer' }) => {
         )}
       </div>
 
-      {/* Summary cards */}
-      <div className="kpi-grid" style={{ marginBottom: '1.5rem' }}>
+      {/* Summary KPI cards */}
+      <div className="kpi-grid" style={{ marginBottom: '1.25rem' }}>
         <div className="kpi-card-minimal" style={{ '--kpi-accent': 'var(--primary)' }}>
           <div className="kpi-label">Total Flagged</div>
           <div className="kpi-value font-mono tabular-nums" style={{ color: 'var(--primary)' }}>{allAnomalies.length}</div>
@@ -161,14 +175,14 @@ const AnomalyTab = ({ anomalyData = [], onRescore, userRole = 'Viewer' }) => {
         </div>
       </div>
 
-      {/* Filter buttons */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: '1.2rem', flexWrap: 'wrap' }}>
+      {/* Filter buttons — scrollable on mobile */}
+      <div className="filter-pills" style={{ marginBottom: '1.2rem' }}>
         {['all', 'high', 'medium', 'low'].map(f => (
           <button
             key={f}
             id={`anomaly-filter-${f}`}
             className={`btn ${filter === f ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '4px 14px', fontSize: '0.82rem' }}
+            style={{ padding: '4px 14px', fontSize: '0.82rem', flexShrink: 0 }}
             onClick={() => setFilter(f)}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -176,6 +190,7 @@ const AnomalyTab = ({ anomalyData = [], onRescore, userRole = 'Viewer' }) => {
         ))}
       </div>
 
+      {/* Content */}
       {rescoring ? (
         <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
           <RefreshCw size={32} className="animate-spin" style={{ color: 'var(--primary)', margin: '0 auto' }} />

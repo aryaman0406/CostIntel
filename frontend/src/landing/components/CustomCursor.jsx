@@ -1,6 +1,6 @@
 /**
  * CustomCursor — Desktop-only dot + trailing ring cursor.
- * Enabled only: (hover: hover) AND (pointer: fine) AND no prefers-reduced-motion.
+ * Enabled only: (hover: hover) AND (pointer: fine) AND no prefers-reduced-motion AND no touch.
  * Never hides native cursor in form fields, inputs, modals.
  * aria-hidden, pointer-events: none. Supports footer toggle to disable.
  */
@@ -8,6 +8,15 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const RING_SIZE = 38;
 const DOT_SIZE  = 8;
+
+// Detect touch/mobile devices reliably
+function isTouchDevice() {
+  return (
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    !window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  );
+}
 
 export default function CustomCursor({ disabled = false }) {
   const ringRef = useRef(null);
@@ -17,13 +26,21 @@ export default function CustomCursor({ disabled = false }) {
   const rafRef  = useRef(null);
   const [hoveringInteractive, setHoveringInteractive] = useState(false);
 
+  // Always restore cursor on unmount (safety net)
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = '';
+    };
+  }, []);
+
   useEffect(() => {
     if (disabled) return;
 
-    // Only enable on fine-pointer hover-capable devices
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    // Only enable on fine-pointer hover-capable desktop devices — never on touch/mobile
+    if (isTouchDevice()) return;
+
     const mqReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!mq.matches || mqReduced.matches) return;
+    if (mqReduced.matches) return;
 
     document.body.style.cursor = 'none';
 
@@ -76,7 +93,8 @@ export default function CustomCursor({ disabled = false }) {
     };
   }, [disabled]);
 
-  if (disabled) return null;
+  // Don't render on touch/mobile devices or when disabled
+  if (disabled || isTouchDevice()) return null;
 
   const sharedStyle = {
     position: 'fixed',

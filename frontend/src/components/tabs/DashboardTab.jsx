@@ -196,8 +196,8 @@ const DashboardTab = ({ data, setActiveTab }) => {
 
       {/* Budget Utilization Guardrail */}
       <div className="card card-3d" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <h3 className="card-title">
               <ShieldCheck size={18} style={{ color: parseFloat(budgetUtilization) > 100 ? 'var(--danger)' : 'var(--success)' }} />
               Budget Utilization Guardrail
@@ -211,6 +211,7 @@ const DashboardTab = ({ data, setActiveTab }) => {
           <span className="font-mono tabular-nums" style={{
             fontSize: '1.3rem',
             fontWeight: 800,
+            flexShrink: 0,
             color: parseFloat(budgetUtilization) > 100 ? 'var(--danger)' : parseFloat(budgetUtilization) > 85 ? 'var(--warning)' : 'var(--success)'
           }}>
             {budgetUtilization}%

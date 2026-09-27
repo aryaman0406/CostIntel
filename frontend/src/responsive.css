@@ -1,0 +1,563 @@
+/* ═══════════════════════════════════════════════════════════════
+   COMPLETE RESPONSIVE UTILITIES & MISSING CLASSES
+   Covers every component: DataEntry, Dashboard, Overview, Anomaly,
+   Simulator, Profile, Monitoring, Audit, Reconciliation, CFO Chat
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Typography Utilities ─────────────────────────────────────── */
+.font-semibold  { font-weight: 600; }
+.font-bold      { font-weight: 700; }
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+.text-danger    { color: var(--danger); }
+.text-success   { color: var(--success); }
+.text-warning   { color: var(--warning); }
+.text-right     { text-align: right; }
+.text-center    { text-align: center; }
+.capitalize     { text-transform: capitalize; }
+
+/* ── Spacing Utilities ────────────────────────────────────────── */
+.w-full         { width: 100%; }
+.mt-1           { margin-top: 0.25rem; }
+.mt-2           { margin-top: 0.5rem; }
+.mt-4           { margin-top: 1rem; }
+.mb-4           { margin-bottom: 1rem; }
+.gap-1          { gap: 0.25rem; }
+
+/* ── Grid Utilities ───────────────────────────────────────────── */
+.grid {
+  display: grid;
+  gap: 1.25rem;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* ── Card Header ─────────────────────────────────────────────── */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Button Group ─────────────────────────────────────────────── */
+.button-group {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+/* ── Alert Banners ───────────────────────────────────────────── */
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+.alert-banner:last-child { margin-bottom: 0; }
+
+.alert-banner.success {
+  background: var(--success-soft);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
+}
+.alert-banner.danger, .alert-banner.error {
+  background: var(--danger-soft);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border);
+}
+.alert-banner.warning {
+  background: var(--warning-soft);
+  color: var(--warning-text);
+  border: 1px solid var(--warning-border);
+}
+.alert-banner.info {
+  background: var(--info-soft);
+  color: var(--info-text);
+  border: 1px solid var(--info-border);
+}
+
+.info-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+/* ── Animations ─────────────────────────────────────────────── */
+.fade-in {
+  animation: fadeInUp 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* ── Pulse dot ──────────────────────────────────────────────── */
+.pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.pulse-dot.active {
+  background: var(--success);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.3); }
+}
+
+/* ── Empty State ─────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  gap: 0.75rem;
+}
+.empty-state-icon {
+  color: var(--text-faint);
+  margin-bottom: 0.5rem;
+}
+.empty-state-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.empty-state-description {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Loading Text ─────────────────────────────────────────────── */
+.loading-text {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 1rem;
+}
+
+/* ── Anomaly Card ──────────────────────────────────────────── */
+.anomaly-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ── Data Entry Specific ─────────────────────────────────────── */
+.data-entry-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Upload file input mobile fix */
+input[type="file"].form-input {
+  cursor: pointer;
+  padding: 0.65rem 0.75rem;
+  line-height: 1.4;
+}
+
+/* ── Simulation Results ─────────────────────────────────────── */
+.simulation-results {
+  margin-top: 1.25rem;
+}
+
+/* ── Button sizes ───────────────────────────────────────────── */
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* ── Overview Container ─────────────────────────────────────── */
+.overview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+/* ── Monitoring ─────────────────────────────────────────────── */
+.monitoring-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.monitoring-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+.monitoring-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Loading Screen ─────────────────────────────────────────── */
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--bg-base);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.loading-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+/* ── Section header ──────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.filter-pills,
+.filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL OVERFLOW PREVENTION
+═══════════════════════════════════════════════════════════════ */
+html, body, #root {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+.app-layout {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+.main-wrapper {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* ── Mobile sidebar backdrop ─────────────────────────────────── */
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — COMPLETE MOBILE-FIRST OVERHAUL
+   Every component is addressed: overview, dashboard, data entry,
+   anomaly, profile, monitoring, simulator, audit, reconciliation
+═══════════════════════════════════════════════════════════════ */
+
+/* === Tablet (<=1080px) === */
+@media (max-width: 1080px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .monitoring-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* === Small tablet / large mobile (<=860px) === */
+@media (max-width: 860px) {
+  /* Sidebar off-canvas */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-xl);
+    z-index: 1000;
+    width: min(270px, 82vw);
+    min-width: unset;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-close-btn { display: flex; }
+  .mobile-menu-btn   { display: flex; }
+
+  .main-container { padding: 1rem; }
+  .top-bar        { padding: 0 1rem; }
+
+  /* Auth: show only form panel */
+  .auth-hero-section { display: none; }
+  .auth-card-premium { padding: 2rem 1.5rem; }
+
+  /* Grids */
+  .charts-grid,
+  .grid-2           { grid-template-columns: 1fr; }
+  .grid-3           { grid-template-columns: repeat(2, 1fr); }
+  .profile-grid     { grid-template-columns: 1fr; }
+  .monitoring-grid  { grid-template-columns: repeat(2, 1fr); }
+
+  /* Tables always scrollable */
+  .data-table-container,
+  .table-responsive,
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+}
+
+/* === Mobile (<=640px) === */
+@media (max-width: 640px) {
+  /* Top-bar cleanup */
+  .live-beacon--topbar { display: none; }
+  .theme-switch-option span { display: none; }
+  .theme-switch-option { padding: 0.35rem 0.45rem; }
+  .breadcrumb-current {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Container */
+  .main-container { padding: 0.75rem; }
+
+  /* KPIs: 2 columns */
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+  .kpi-card, .kpi-card-minimal {
+    min-height: 92px;
+    padding: 0.85rem 0.8rem;
+  }
+  .kpi-value { font-size: 1.25rem; }
+
+  /* Charts */
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .chart-container { height: 210px; min-height: 190px; }
+
+  /* All 2-col+ grids → single column */
+  .grid-2, .grid-3, .grid-4,
+  .charts-grid, .profile-grid,
+  .monitoring-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Cards */
+  .card, .table-card, .audit-card, .anomaly-card, .service-card,
+  .feature-card, .reconciliation-card, .action-card, .metric-card,
+  .data-card, .simulation-results, .shadow-cost-card, .card-3d {
+    padding: 0.9rem;
+  }
+
+  /* Overview module grid: single column */
+  .overview-container .grid-2 { grid-template-columns: 1fr !important; }
+
+  /* Inline 4-col recon tier grid in OverviewTab → 2x2 */
+  .overview-tier-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Section header stacks */
+  .section-header, .monitoring-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  /* Filter bars: horizontal scroll */
+  .filter-bar, .filter-pills, .button-group {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  /* Alert banners: full-width */
+  .info-banners .alert-banner { font-size: 0.83rem; }
+
+  /* Chatbot: full-width */
+  .chatbot-floating {
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+    bottom: 5rem;
+    height: 400px;
+  }
+
+  /* Auth */
+  .auth-wrapper {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    flex-direction: column;
+  }
+  .auth-card-premium { padding: 1.5rem 1rem; }
+
+  /* Profile */
+  .profile-grid     { grid-template-columns: 1fr; }
+  .profile-details  {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .activity-metrics { grid-template-columns: 1fr 1fr; }
+
+  /* Tables */
+  .table-container, .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Last run banner */
+  .last-run-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Recon stat chips */
+  .recon-stat-chips {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.25rem;
+  }
+
+  /* CFO Chat */
+  .cfo-chat-page { height: calc(100vh - 110px); }
+
+  /* Data Entry: form grids → single column on mobile */
+  .data-entry-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ledger tape */
+  .ledger-tape {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  /* Anomaly card header: stack on small screens */
+  .anomaly-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Simulator button group */
+  .button-group {
+    gap: 0.5rem;
+  }
+  .button-group .btn {
+    flex: 1 1 calc(33% - 0.5rem);
+    min-width: 0;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Budget bar meta: stack */
+  .budget-bar-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+  }
+
+  /* Users table: email truncate on mobile */
+  .users-email-cell {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* === Small phone portrait (<=400px) === */
+@media (max-width: 400px) {
+  .kpi-grid          { grid-template-columns: 1fr; }
+  .activity-metrics  { grid-template-columns: 1fr; }
+  .top-bar           { padding: 0 0.6rem; }
+  .kpi-value         { font-size: 1.1rem; }
+  .chatbot-floating  {
+    right: 0.2rem;
+    left: 0.2rem;
+    height: 360px;
+  }
+  .sidebar           { width: min(240px, 88vw); }
+  .auth-card-premium { padding: 1.1rem 0.8rem; }
+  .main-container    { padding: 0.5rem; }
+  .card, .card-3d    { padding: 0.75rem; }
+  .button-group .btn {
+    flex: 1 1 100%;
+  }
+}

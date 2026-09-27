@@ -54,28 +54,30 @@ const SimulatorTab = ({ hasData, runSim, simLoading, simulation, setActiveTab })
             {Array.isArray(simulation.category_breakdown) && simulation.category_breakdown.length > 0 && (
               <div className="card table-card" style={{ marginTop: '0.75rem' }}>
                 <h3 className="card-title">Category Breakdown</h3>
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Category</th>
-                      <th>Current</th>
-                      <th>Reduction</th>
-                      <th>Savings</th>
-                      <th>Projected</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {simulation.category_breakdown.map((row) => (
-                      <tr key={row.category}>
-                        <td className="font-semibold">{row.category}</td>
-                        <td className="font-mono tabular-nums">{fmtINR(row.current)}</td>
-                        <td className="font-mono tabular-nums">{Number(row.reduction_pct || 0).toFixed(1)}%</td>
-                        <td className="text-success font-mono tabular-nums">{fmtINR(row.projected_savings)}</td>
-                        <td className="font-mono tabular-nums">{fmtINR(row.projected_new_total)}</td>
+                <div className="table-container">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Category</th>
+                        <th>Current</th>
+                        <th>Reduction</th>
+                        <th>Savings</th>
+                        <th>Projected</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {simulation.category_breakdown.map((row) => (
+                        <tr key={row.category}>
+                          <td className="font-semibold">{row.category}</td>
+                          <td className="font-mono tabular-nums">{fmtINR(row.current)}</td>
+                          <td className="font-mono tabular-nums">{Number(row.reduction_pct || 0).toFixed(1)}%</td>
+                          <td className="text-success font-mono tabular-nums">{fmtINR(row.projected_savings)}</td>
+                          <td className="font-mono tabular-nums">{fmtINR(row.projected_new_total)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 

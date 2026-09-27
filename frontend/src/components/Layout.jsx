@@ -183,9 +183,11 @@ const Sidebar = ({
   );
 };
 
-const TopBar = ({ activeTab, setMobileOpen, theme, toggleTheme, fetchAllData }) => {
+const TopBar = ({ activeTab, setMobileOpen, theme, toggleTheme, fetchAllData, profile }) => {
+  // Use the role-filtered nav groups to find the current label
+  const navGroups = getNavGroups(profile?.role);
   let currentLabel = 'Overview';
-  for (const group of NAV_GROUPS) {
+  for (const group of navGroups) {
     const found = group.items.find(i => i.key === activeTab);
     if (found) { currentLabel = found.label; break; }
   }
@@ -207,8 +209,8 @@ const TopBar = ({ activeTab, setMobileOpen, theme, toggleTheme, fetchAllData }) 
           <span className="breadcrumb-current">{currentLabel}</span>
         </div>
 
-        {/* 3D Live status indicator */}
-        <div className="live-beacon">
+        {/* 3D Live status indicator — hidden on very small screens */}
+        <div className="live-beacon live-beacon--topbar">
           <span className="beacon-dot" />
           <span>Live Agent</span>
         </div>
